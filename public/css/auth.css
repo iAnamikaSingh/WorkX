@@ -1,0 +1,79 @@
+/* Auth and form-specific styles */
+
+.floating-group {
+  position: relative;
+}
+
+.floating-group label {
+  position: absolute;
+  left: 1.4rem;
+  top: 1rem;
+  pointer-events: none;
+  color: rgba(226, 232, 240, 0.82);
+  transition: transform 0.22s ease, color 0.22s ease, font-size 0.22s ease;
+  transform-origin: left top;
+}
+
+.floating-group .input-group label {
+  left: 4rem;
+}
+
+.floating-group .form-control {
+  padding-top: 1.75rem;
+}
+
+.floating-group .form-control:focus + label,
+.floating-group .form-control:not(:placeholder-shown) + label {
+  transform: translateY(-0.7rem) scale(0.86);
+  color: var(--accent);
+}
+
+.input-group.align-items-center {
+  gap: 0.25rem;
+}
+
+.input-group .form-control {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-radius: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  border-right: 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.input-group .input-group-text {
+  border-right: 0;
+  border-radius: 16px 0 0 16px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.input-group .toggle-password-btn {
+  flex: 0 0 auto;
+  border-radius: 0 16px 16px 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 0;
+  min-width: 2.8rem;
+  padding: 0 0.9rem;
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(226, 232, 240, 0.95);
+}
+
+.input-group .toggle-password-btn:hover,
+.input-group .toggle-password-btn:focus {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.auth-card .input-group .form-control,
+.auth-card .input-group .input-group-text,
+.auth-card .input-group .toggle-password-btn {
+  transition: border-color 0.22s ease, background 0.22s ease, color 0.22s ease;
+}
+
+.otp-group .form-text {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: rgba(203, 213, 225, 0.7);
+}

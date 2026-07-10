@@ -1,0 +1,143 @@
+<% layout("boilerplate.ejs") %>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8 col-xl-7">
+    <div class="card border-0 shadow-sm rounded-4">
+      <div class="card-body p-4 p-md-5">
+        <div class="d-flex align-items-center gap-2 mb-4">
+          <div class="rounded-circle bg-info bg-opacity-10 p-2 text-info">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </div>
+          <div>
+            <h2 class="h4 mb-1 fw-semibold text-dark">Edit Log</h2>
+            <p class="text-muted mb-0 small">Update your notes with a simple, structured layout.</p>
+          </div>
+        </div>
+
+        <% if (success) { %>
+          <div class="alert alert-info border-0 rounded-3 text-dark d-flex justify-content-between align-items-start mb-4" role="alert">
+            <span><%= success %></span>
+            <button type="button" class="btn-close" aria-label="Close"></button>
+          </div>
+        <% } %>
+        <% if (error) { %>
+          <div class="alert alert-danger border-0 rounded-3 d-flex justify-content-between align-items-start mb-4" role="alert">
+            <span><%= error %></span>
+            <button type="button" class="btn-close" aria-label="Close"></button>
+          </div>
+        <% } %>
+
+        <form method="POST" action="/log/<%= log.id %>?_method=PUT" class="needs-validation" novalidate>
+          <div class="mb-4">
+            <label class="form-label fw-semibold text-dark" for="logDate">Date</label>
+            <input
+              type="date"
+              name="date"
+              id="logDate"
+              value="<%= log.date.toISOString().split('T')[0] %>"
+              class="form-control rounded-3 border-dark-subtle"
+              required
+            >
+          </div>
+
+          <hr class="my-4">
+
+          <% log.topics.forEach((topic, index) => { %>
+            <div class="topic card border-0 bg-light rounded-4 mb-4">
+              <div class="card-body p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                  <h3 class="topic-title h5 mb-0 fw-semibold text-dark">Topic <%= index + 1 %></h3>
+                  <button type="button" class="removeTopic btn btn-sm btn-outline-danger">
+                    <i class="fa-solid fa-xmark me-1"></i>Remove
+                  </button>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-semibold text-dark" for="topics[<%= index %>]">Topic Name</label>
+                  <input
+                    type="text"
+                    name="topics[<%= index %>][topicName]"
+                    value="<%= topic.topicName %>"
+                    id="topics[<%= index %>]"
+                    class="form-control rounded-3 border-dark-subtle"
+                    required
+                  >
+                </div>
+
+                <div class="subtopics mt-4">
+                  <% topic.subtopics.forEach((subtopic, subIndex) => { %>
+                    <div class="subtopic mb-3">
+                      <label class="form-label fw-semibold text-dark" for="subtopic-<%= index %>-<%= subIndex %>">
+                        Subtopic <%= subIndex + 1 %>
+                      </label>
+                      <div class="d-flex gap-2">
+                        <input
+                          type="text"
+                          name="topics[<%= index %>][subtopics][]"
+                          value="<%= subtopic %>"
+                          id="subtopic-<%= index %>-<%= subIndex %>"
+                          class="form-control rounded-3 border-dark-subtle"
+                        >
+                        <button type="button" class="removeSubtopic btn btn-outline-dark btn-sm">
+                          <i class="fa-solid fa-minus"></i>
+                        </button>
+                      </div>
+                    </div>
+                  <% }) %>
+                </div>
+
+                <button type="button" class="addSubtopic btn btn-sm btn-outline-info">
+                  <i class="fa-solid fa-plus me-1"></i>Add Subtopic
+                </button>
+
+                <div class="row g-3 mt-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold text-dark" for="topics[<%= index %>][time][hour]">Hour</label>
+                    <input
+                      type="number"
+                      name="topics[<%= index %>][time][hour]"
+                      value="<%= topic.time.hour %>"
+                      id="topics[<%= index %>][time][hour]"
+                      min="0"
+                      max="24"
+                      oninvalid="this.setCustomValidity('Please enter hour between 0 and 24')"
+                      oninput="this.setCustomValidity('')"
+                      class="form-control rounded-3 border-dark-subtle"
+                      required
+                    >
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-semibold text-dark" for="topics[<%= index %>][time][minute]">Minute</label>
+                    <input
+                      type="number"
+                      name="topics[<%= index %>][time][minute]"
+                      value="<%= topic.time.minute %>"
+                      id="topics[<%= index %>][time][minute]"
+                      min="0"
+                      max="59"
+                      oninvalid="this.setCustomValidity('Please enter minute between 0 and 59')"
+                      oninput="this.setCustomValidity('')"
+                      class="form-control rounded-3 border-dark-subtle"
+                      required
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+
+          <div class="d-flex flex-wrap gap-2 mt-4">
+            <button type="button" id="addTopicBtn" class="btn btn-outline-info">
+              <i class="fa-solid fa-plus me-1"></i>Add Topic
+            </button>
+            <button type="submit" class="btn btn-outline-success">
+              <i class="fa-solid fa-floppy-disk me-1"></i>Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/editForm.js"></script>

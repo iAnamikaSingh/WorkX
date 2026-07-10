@@ -1,0 +1,117 @@
+
+<% layout("boilerplate.ejs") %>
+
+<div class="container py-5 py-md-6">
+  <section class="hero-shell fade-in-up">
+    <div class="row align-items-center gy-5">
+      <div class="col-lg-6">
+        <div class="hero-copy">
+          <span class="hero-eyebrow">
+            <i class="fa-solid fa-rocket"></i>
+            Organize learnings, Track your progress
+          </span>
+          <h1 class="hero-title">
+            Track your learning journey with clarity and speed.
+          </h1>
+          <p class="hero-subtitle">
+            Build a stronger habit of study, document progress, and stay focused on every topic with a clean, intelligent workspace.
+          </p>
+
+          <div class="hero-actions">
+            <% if (currentUser) { %>
+              <a href="/logs" class="btn btn-info btn-lg">
+                View Logs
+              </a>
+              <a href="/log/new" class="btn btn-outline-info btn-lg">
+                Add Log
+              </a>
+            <% } else { %>
+              <a href="/signup" class="btn btn-info btn-lg">
+                Get Started
+              </a>
+              <a href="/login" class="btn btn-outline-info btn-lg">
+                Login
+              </a>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="hero-card glass-card p-4 p-md-5">
+          <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+              <p class="text-muted mb-1">Today's focus</p>
+              <h3 class="mb-0">JavaScript Modules</h3>
+            </div>
+            <span class="badge bg-info bg-opacity-25 text-info fs-6">In progress</span>
+          </div>
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="glass-panel p-3 text-center">
+                <p class="mb-1 text-muted small">Topics</p>
+                <h4 class="mb-0">18</h4>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="glass-panel p-3 text-center">
+                <p class="mb-1 text-muted small">Subtopics</p>
+                <h4 class="mb-0">4</h4>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="glass-panel p-3">
+                <p class="mb-2 text-muted small">Next milestone</p>
+                <div class="progress" style="height: 0.5rem; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,0.08);">
+                  <div class="progress-bar bg-info" role="progressbar" style="width: 64%;"></div>
+                </div>
+                <p class="mt-2 mb-0 small text-muted">64% complete</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hero-grid mt-5 pt-4 fade-in-up">
+    <div class="feature-card glass-card h-100">
+      <div class="card-body text-center">
+        <i class="fa-solid fa-list-check mb-3"></i>
+        <h4>Manage topics</h4>
+        <p>Organize learning topics in a structured dashboard with clean progress insights.</p>
+      </div>
+    </div>
+
+    <div class="feature-card glass-card h-100">
+      <div class="card-body text-center">
+        <i class="fa-solid fa-diagram-project mb-3"></i>
+        <h4>Track progress</h4>
+        <p>Break large goals into subtopics, then track each milestone with ease.</p>
+      </div>
+    </div>
+
+    <div class="feature-card glass-card h-100">
+      <div class="card-body text-center">
+        <i class="fa-solid fa-chart-line mb-3"></i>
+        <h4>Stay consistent</h4>
+        <p>Keep a record of your learning sessions and create a routine that lasts.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-card glass-card mt-5 fade-in-up">
+    <div class="row align-items-center gy-4">
+      <div class="col-md-8">
+        <h2 class="mb-2">Ready to build your best study rhythm?</h2>
+        <p class="text-muted mb-0">Start tracking your progress and stay motivated with elegant learning workflows.</p>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <a href="/log/new" class="btn btn-info btn-lg">
+          Create your first log
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,66 @@
+<% layout("boilerplate.ejs") %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="auth-card glass-card p-4 p-md-5 fade-in-up">
+        <div class="text-center mb-4">
+          <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-4" style="width: 72px; height: 72px; background: rgba(139, 92, 246, 0.14);">
+            <i class="fa-solid fa-user-plus fa-2x text-info"></i>
+          </div>
+          <h2 class="fw-bold mt-3">Create Account</h2>
+          <p class="text-muted mb-0">Sign up and verify with OTP to complete your registration.</p>
+        </div>
+
+        <form method="POST" action="/signup" class="needs-validation" novalidate>
+          <div class="mb-4 floating-group">
+            <input class="form-control" name="email" type="email" id="email" placeholder=" " required />
+            <label for="email">Email</label>
+            <div class="invalid-feedback">Please enter a valid email address.</div>
+          </div>
+
+          <div class="mb-4 d-flex flex-column flex-sm-row gap-2">
+            <button type="button" class="btn btn-outline-info flex-fill" id="sendOtpButton">Send OTP</button>
+            <button type="button" class="btn btn-outline-info flex-fill" id="verifyOtpButton">Verify OTP</button>
+          </div>
+
+          <div class="mb-4 floating-group otp-group" style="display:none;">
+            <input class="form-control" name="otp" type="text" id="otp" placeholder=" " maxlength="6" inputmode="numeric" pattern="\d{6}" />
+            <label for="otp">Enter OTP</label>
+            <div class="form-text text-muted">Enter the 6-digit code sent to your email.</div>
+          </div>
+
+          <div class="mb-3" id="verificationMessage" style="display:none;"></div>
+
+          <div class="mb-4 floating-group">
+            <input class="form-control" name="username" type="text" id="username" placeholder=" " minlength="3" required />
+            <label for="username">Username</label>
+            <div class="invalid-feedback">Username must be at least 3 characters long.</div>
+          </div>
+
+          <div class="mb-4 floating-group">
+            <div class="input-group align-items-center">
+              <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+              <input class="form-control" name="password" type="password" id="password" placeholder=" " minlength="8" required />
+              <label for="password">Password</label>
+              <button class="btn btn-light toggle-password-btn" type="button" id="togglePassword" aria-label="Show password">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+            <div class="invalid-feedback">Password must be at least 8 characters long.</div>
+          </div>
+
+          <button type="submit" class="btn btn-info w-100 fw-semibold">
+            <i class="fa-solid fa-user-plus me-2"></i>
+            Sign Up
+          </button>
+        </form>
+
+        <p class="text-center text-muted mt-3 mb-0 small">
+          Already have an account? <a href="/login" class="text-info text-decoration-none">Login</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/js/signup.js"></script>
