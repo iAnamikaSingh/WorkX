@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordInput = document.querySelector("#pass");
   const togglePasswordBtn = document.querySelector("#togglePassword");
   const sendOtpBtn = document.querySelector(".send-otp");
-  const email = document.querySelector("#email");
+  const emailInput = document.querySelector("#email");
   const otpMsg = document.getElementById("otp-msg");
   const verifyEmailBtn = document.querySelector(".verify-email");
   const forms = document.querySelectorAll(".needs-validation");
@@ -40,7 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
   //Sending OTP to email
   
   sendOtpBtn.addEventListener("click", async () => {
-    if(!email.value.trim()){
+    const email = emailInput.value.trim().toLowerCase();
+    if(!email){
       alert("Please enter your email before requesting an OTP");
       return;
     }
@@ -49,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const response = await fetch("/api/send-otp",{
       method:"POST",
       headers:{"Content-Type" : "application/json"} ,
-      body: JSON.stringify({email: email.value.trim()})
+      body: JSON.stringify({email: email})
     }
     
   )    
