@@ -33,46 +33,49 @@ router.post("/api/send-otp", async (req, res) => {
       to: normalizedEmail,
       subject: "Verify Your Email - WorkX",
       html: `
-          <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 40px;">
-            <div style="max-width: 500px; margin: auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+          <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+            <div style="width:100%;  max-width: 500px; margin: auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
       
               <!-- Header -->
-              <div style="background: #4F46E5; color: white; text-align: center; padding: 20px;">
+              <div style="background:rgb(59, 184, 206); color: white; text-align: center; padding: 16px;">
                 <h1 style="margin: 0;">WorkX</h1>
               </div>
       
               <!-- Body -->
-              <div style="padding: 30px; color: #333;">
-                <h2>Hello 👋</h2>
+              <div style="padding: 20px; line-height:1.6; color: #333; word-break: break-word;">
+                <h2 style="margin-top: 0">Hello,</h2>
       
                 <p>
-                  Thank you for registering with <strong>WorkX</strong>.
-                  Please use the following One-Time Password (OTP) to verify your email address.
+                  Here is your One-Time Password (OTP) for email verification on <strong>WorkX</strong>.
                 </p>
-      
-                <div style="
-                  margin: 30px auto;
-                  width: fit-content;
-                  background: #F3F4F6;
-                  border: 2px dashed #4F46E5;
-                  padding: 15px 30px;
-                  border-radius: 8px;
-                  font-size: 32px;
-                  font-weight: bold;
-                  letter-spacing: 8px;
-                  color: #4F46E5;
-                ">
+                
+                <div style="text-align:center;">
+                  <div style="
+                  border: 2px dashed rgb(59, 184, 206);
+                  border-radius:4px;
+                  padding:6px 16px;
+                  font-size:24px;
+                  color:rgb(59, 184, 206);
+                  display:inline-block;
+                  letter-spacing:4px;
+                  background-color:rgb(240, 248, 255);
+                  ">
                   ${otp}
                 </div>
-      
+                </div>
+                
                 <p>
-                  This OTP is valid for <strong>5 minutes</strong>.
+                  This OTP will be valid for next <strong>10 minutes</strong>.
+                </P>
+                <p>
+                  If you did not request this verification, you can safely ignore this email.
                 </p>
       
-                <p>
-                  If you did not request this email, you can safely ignore it.
+                <p style="margin-top: 30px;">
+                Best regards,<br>
+                <strong>Team WorkX</strong>
                 </p>
-      
+       
                 <hr style="margin: 30px 0;">
       
                 <p style="font-size: 13px; color: #777;">
@@ -86,7 +89,7 @@ router.post("/api/send-otp", async (req, res) => {
     });
     return res.status(200).json({
       success: true,
-      message: "OTP sent to email",
+      message: "OTP sent to email (Valid for 10 min)",
     });
   } catch (err) {
     console.log(err);

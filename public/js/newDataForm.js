@@ -16,14 +16,14 @@ function addTopic() {
   topicDiv.innerHTML = `
     <div class="card-body p-4">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h5 mb-0 fw-semibold text-white">Topic ${topicNumber}</h2>
+        <h2 class="h5 mb-0 fw-semibold        ">Topic ${topicNumber}</h2>
         <button type="button" class="removeTopic btn btn-sm btn-outline-danger">
           <i class="fa-solid fa-xmark me-1"></i>Remove
         </button>
       </div>
 
       <div class="mb-3">
-        <label for="topicName-${currentIndex}" class="form-label fw-semibold text-white">Topic Name</label>
+        <label for="topicName-${currentIndex}" class="form-label fw-semibold        ">Topic Name</label>
         <input
           type="text"
           name="topics[${currentIndex}][topicName]"
@@ -35,7 +35,7 @@ function addTopic() {
       </div>
 
       <div class="mb-3">
-        <label class="form-label fw-semibold text-white">Subtopics</label>
+        <label class="form-label fw-semibold        ">Subtopics</label>
         <div class="subtopics mt-2"></div>
         <button type="button" class="addSubtopic btn btn-sm btn-outline-info mt-3">
           <i class="fa-solid fa-plus me-1"></i>Add Subtopic
@@ -44,7 +44,7 @@ function addTopic() {
 
       <div class="row g-3">
         <div class="col-sm-6">
-          <label class="form-label fw-semibold text-white" for="hour-${currentIndex}">Hours</label>
+          <label class="form-label fw-semibold        " for="hour-${currentIndex}">Hours</label>
           <input
             type="number"
             name="topics[${currentIndex}][time][hour]"
@@ -59,7 +59,7 @@ function addTopic() {
           />
         </div>
         <div class="col-sm-6">
-          <label class="form-label fw-semibold text-white" for="minute-${currentIndex}">Minutes</label>
+          <label class="form-label fw-semibold        " for="minute-${currentIndex}">Minutes</label>
           <input
             type="number"
             name="topics[${currentIndex}][time][minute]"
@@ -110,7 +110,7 @@ function addSubtopic(container, topicIndex) {
       class="form-control rounded-3 border-dark-subtle"
       placeholder="Enter subtopic"
     />
-    <button type="button" class="removeSubtopic btn btn-outline-dark btn-sm">
+    <button type="button" class="removeSubtopic btn btn-outline-danger btn-sm">
       <i class="fa-solid fa-minus"></i>
     </button>
   `;
@@ -137,7 +137,9 @@ function updateTopicNumbers() {
       topicNameInput.id = `topicName-${index}`;
     }
 
-    const topicLabel = topic.querySelector('label[for^="topicName-"], label[for^="topics["]');
+    const topicLabel = topic.querySelector(
+      'label[for^="topicName-"], label[for^="topics["]',
+    );
     if (topicLabel) {
       topicLabel.setAttribute("for", `topicName-${index}`);
     }

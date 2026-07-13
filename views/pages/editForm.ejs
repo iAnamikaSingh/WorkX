@@ -9,13 +9,13 @@
             <i class="fa-solid fa-pen-to-square"></i>
           </div>
           <div>
-            <h2 class="h4 mb-1 fw-semibold text-dark">Edit Log</h2>
+            <h2 class="h4 mb-1 fw-semibold          ">Edit Log</h2>
             <p class="text-muted mb-0 small">Update your notes with a simple, structured layout.</p>
           </div>
         </div>
 
         <% if (success) { %>
-          <div class="alert alert-info border-0 rounded-3 text-dark d-flex justify-content-between align-items-start mb-4" role="alert">
+          <div class="alert alert-info border-0 rounded-3           d-flex justify-content-between align-items-start mb-4" role="alert">
             <span><%= success %></span>
             <button type="button" class="btn-close" aria-label="Close"></button>
           </div>
@@ -29,7 +29,7 @@
 
         <form method="POST" action="/log/<%= log.id %>?_method=PUT" class="needs-validation" novalidate>
           <div class="mb-4">
-            <label class="form-label fw-semibold text-dark" for="logDate">Date</label>
+            <label class="form-label fw-semibold " for="logDate">Date</label>
             <input
               type="date"
               name="date"
@@ -46,14 +46,14 @@
             <div class="topic card border-0 bg-light rounded-4 mb-4">
               <div class="card-body p-4">
                 <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
-                  <h3 class="topic-title h5 mb-0 fw-semibold text-dark">Topic <%= index + 1 %></h3>
+                  <h3 class="topic-title h5 mb-0 fw-semibold          ">Topic <%= index + 1 %></h3>
                   <button type="button" class="removeTopic btn btn-sm btn-outline-danger">
                     <i class="fa-solid fa-xmark me-1"></i>Remove
                   </button>
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label fw-semibold text-dark" for="topics[<%= index %>]">Topic Name</label>
+                  <label class="form-label fw-semibold          " for="topics[<%= index %>]">Topic Name</label>
                   <input
                     type="text"
                     name="topics[<%= index %>][topicName]"
@@ -67,7 +67,7 @@
                 <div class="subtopics mt-4">
                   <% topic.subtopics.forEach((subtopic, subIndex) => { %>
                     <div class="subtopic mb-3">
-                      <label class="form-label fw-semibold text-dark" for="subtopic-<%= index %>-<%= subIndex %>">
+                      <label class="form-label fw-semibold          " for="subtopic-<%= index %>-<%= subIndex %>">
                         Subtopic <%= subIndex + 1 %>
                       </label>
                       <div class="d-flex gap-2">
@@ -78,7 +78,7 @@
                           id="subtopic-<%= index %>-<%= subIndex %>"
                           class="form-control rounded-3 border-dark-subtle"
                         >
-                        <button type="button" class="removeSubtopic btn btn-outline-dark btn-sm">
+                        <button type="button" class="removeSubtopic btn btn-outline-danger btn-sm">
                           <i class="fa-solid fa-minus"></i>
                         </button>
                       </div>
@@ -92,7 +92,7 @@
 
                 <div class="row g-3 mt-3">
                   <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark" for="topics[<%= index %>][time][hour]">Hour</label>
+                    <label class="form-label fw-semibold          " for="topics[<%= index %>][time][hour]">Hour</label>
                     <input
                       type="number"
                       name="topics[<%= index %>][time][hour]"
@@ -107,7 +107,7 @@
                     >
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark" for="topics[<%= index %>][time][minute]">Minute</label>
+                    <label class="form-label fw-semibold          " for="topics[<%= index %>][time][minute]">Minute</label>
                     <input
                       type="number"
                       name="topics[<%= index %>][time][minute]"

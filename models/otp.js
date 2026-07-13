@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
+
+// Expiration after 10 min 
 const OTP_EXPIRY_MS = 10 * 60 * 1000;
+
 const otpSchema = new mongoose.Schema({
   email: {
     type: String,

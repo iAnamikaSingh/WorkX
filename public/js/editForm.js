@@ -1,4 +1,7 @@
-const addTopicBtn = typeof document !== "undefined" ? document.getElementById("addTopicBtn") : null;
+const addTopicBtn =
+  typeof document !== "undefined"
+    ? document.getElementById("addTopicBtn")
+    : null;
 
 function reindexTopicData(topicEntries) {
   return topicEntries.map((topicEntry, index) => ({
@@ -14,7 +17,9 @@ function reindexTopics() {
   }
 
   const topicElements = Array.from(document.querySelectorAll(".topic"));
-  const reindexedTopics = reindexTopicData(topicElements.map((topicElement) => ({ element: topicElement })));
+  const reindexedTopics = reindexTopicData(
+    topicElements.map((topicElement) => ({ element: topicElement })),
+  );
 
   reindexedTopics.forEach(({ element }, index) => {
     const topicTitle = element.querySelector(".topic-title");
@@ -80,14 +85,14 @@ if (addTopicBtn) {
     topicDiv.innerHTML = `
       <div class="card-body p-4">
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
-          <h3 class="topic-title h5 mb-0 fw-semibold text-dark">Topic ${nextTopicIndex + 1}</h3>
+          <h3 class="topic-title h5 mb-0 fw-semibold         ">Topic ${nextTopicIndex + 1}</h3>
           <button type="button" class="removeTopic btn btn-sm btn-outline-danger">
             <i class="fa-solid fa-xmark me-1"></i>Remove
           </button>
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-semibold text-dark" for="topics[${nextTopicIndex}]">Topic Name</label>
+          <label class="form-label fw-semibold         " for="topics[${nextTopicIndex}]">Topic Name</label>
           <input
             type="text"
             name="topics[${nextTopicIndex}][topicName]"
@@ -99,7 +104,7 @@ if (addTopicBtn) {
 
         <div class="subtopics mt-4">
           <div class="subtopic mb-3">
-            <label class="form-label fw-semibold text-dark" for="subtopic-${nextTopicIndex}-0">Subtopic 1</label>
+            <label class="form-label fw-semibold         " for="subtopic-${nextTopicIndex}-0">Subtopic 1</label>
             <div class="d-flex gap-2">
               <input
                 type="text"
@@ -107,7 +112,7 @@ if (addTopicBtn) {
                 id="subtopic-${nextTopicIndex}-0"
                 class="form-control rounded-3 border-dark-subtle"
               >
-              <button type="button" class="removeSubtopic btn btn-outline-dark btn-sm">
+              <button type="button" class="removeSubtopic btn btn-outline-danger btn-sm">
                 <i class="fa-solid fa-minus"></i>
               </button>
             </div>
@@ -120,7 +125,7 @@ if (addTopicBtn) {
 
         <div class="row g-3 mt-3">
           <div class="col-md-6">
-            <label class="form-label fw-semibold text-dark" for="topics[${nextTopicIndex}][time][hour]">Hour</label>
+            <label class="form-label fw-semibold         " for="topics[${nextTopicIndex}][time][hour]">Hour</label>
             <input
               type="number"
               name="topics[${nextTopicIndex}][time][hour]"
@@ -135,7 +140,7 @@ if (addTopicBtn) {
             >
           </div>
           <div class="col-md-6">
-            <label class="form-label fw-semibold text-dark" for="topics[${nextTopicIndex}][time][minute]">Minute</label>
+            <label class="form-label fw-semibold         " for="topics[${nextTopicIndex}][time][minute]">Minute</label>
             <input
               type="number"
               name="topics[${nextTopicIndex}][time][minute]"
@@ -169,14 +174,16 @@ document.addEventListener("click", (e) => {
     const topicDiv = addSubtopicBtn.closest(".topic");
     const subtopicsDiv = topicDiv.querySelector(".subtopics");
     const topicNameInput = topicDiv.querySelector('input[name*="[topicName]"]');
-    const match = topicNameInput ? topicNameInput.name.match(/topics\[(\d+)\]/) : null;
+    const match = topicNameInput
+      ? topicNameInput.name.match(/topics\[(\d+)\]/)
+      : null;
     const topicKey = match ? match[1] : "0";
     const subtopicCount = subtopicsDiv.querySelectorAll(".subtopic").length;
     const subtopicDiv = document.createElement("div");
 
     subtopicDiv.className = "subtopic mb-3";
     subtopicDiv.innerHTML = `
-      <label class="form-label fw-semibold text-dark" for="subtopic-${topicKey}-${subtopicCount}">Subtopic ${subtopicCount + 1}</label>
+      <label class="form-label fw-semibold         " for="subtopic-${topicKey}-${subtopicCount}">Subtopic ${subtopicCount + 1}</label>
       <div class="d-flex gap-2">
         <input
           type="text"
@@ -184,7 +191,7 @@ document.addEventListener("click", (e) => {
           id="subtopic-${topicKey}-${subtopicCount}"
           class="form-control rounded-3 border-dark-subtle"
         >
-        <button type="button" class="removeSubtopic btn btn-outline-dark btn-sm">
+        <button type="button" class="removeSubtopic btn btn-outline-danger btn-sm">
           <i class="fa-solid fa-minus"></i>
         </button>
       </div>

@@ -1,53 +1,132 @@
 <% layout("boilerplate.ejs") %>
 
-<div class="container py-5">
+<!-- <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
       <div class="auth-card glass-card p-4 p-md-5 fade-in-up">
         <div class="text-center mb-4">
-          <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-4" style="width: 72px; height: 72px; background: rgba(139, 92, 246, 0.14);">
+          <div
+            class="mb-3 d-inline-flex align-items-center justify-content-center rounded-4"
+            style="
+              width: 72px;
+              height: 72px;
+              background: rgba(139, 92, 246, 0.14);
+            "
+          >
             <i class="fa-solid fa-user-plus fa-2x text-info"></i>
           </div>
           <h2 class="fw-bold mt-3">Create Account</h2>
-          <p class="text-muted mb-0">Sign up and verify with OTP to complete your registration.</p>
+          <p class="mb-0">
+            Sign up to continue
+          </p>
         </div>
 
-        <form method="POST" action="/signup" class="needs-validation" novalidate>
-          <div class="mb-4 floating-group">
-            <input class="form-control" name="email" type="email" id="email" placeholder=" " required />
+        <form
+          method="POST"
+          action="/signup"
+          class="needs-validation"
+          novalidate
+        >
+          <div class="mb-4 ">
             <label for="email">Email</label>
-            <div class="invalid-feedback">Please enter a valid email address.</div>
+            <input
+              class="form-control"
+              name="email"
+              type="email"
+              id="email"
+              placeholder=" "
+              required
+            />
+            
+            <div class="invalid-feedback">
+              Please enter a valid email address.
+            </div>
           </div>
 
           <div class="mb-4 d-flex flex-column flex-sm-row gap-2">
-            <button type="button" class="btn btn-outline-info flex-fill" id="sendOtpButton">Send OTP</button>
-            <button type="button" class="btn btn-outline-info flex-fill" id="verifyOtpButton">Verify OTP</button>
+            <button
+              type="button"
+              class="btn btn-outline-info flex-fill"
+              id="sendOtpButton"
+            >
+              Send OTP
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-info flex-fill"
+              id="verifyOtpButton"
+            >
+              Verify OTP
+            </button>
           </div>
 
-          <div class="mb-4 floating-group otp-group" style="display:none;">
-            <input class="form-control" name="otp" type="text" id="otp" placeholder=" " maxlength="6" inputmode="numeric" pattern="\d{6}" />
+          <div class="mb-4   otp-group" style="display: none">
+            <input
+              class="form-control"
+              name="otp"
+              type="text"
+              id="otp"
+              placeholder=" "
+              maxlength="6"
+              inputmode="numeric"
+              pattern="\d{6}"
+            />
             <label for="otp">Enter OTP</label>
-            <div class="form-text text-muted">Enter the 6-digit code sent to your email.</div>
+            <div class="form-text        ">
+              Enter the 6-digit code sent to your email.
+            </div>
           </div>
 
-          <div class="mb-3" id="verificationMessage" style="display:none;"></div>
+          <div
+            class="mb-3"
+            id="verificationMessage"
+            style="display: none"
+          ></div>
 
-          <div class="mb-4 floating-group">
-            <input class="form-control" name="username" type="text" id="username" placeholder=" " minlength="3" required />
-            <label for="username">Username</label>
-            <div class="invalid-feedback">Username must be at least 3 characters long.</div>
+          <div class="mb-4">
+            <input
+              class="form-control"
+              name="username"
+              type="text"
+              id="username"
+              placeholder=" "
+              minlength="3"
+              required
+            />
+            
+            <div class="invalid-feedback">
+              Username must be at least 3 characters long.
+            </div>
           </div>
 
-          <div class="mb-4 floating-group">
+          <div class="mb-4  d-flex flex-column">
             <div class="input-group align-items-center">
-              <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-              <input class="form-control" name="password" type="password" id="password" placeholder=" " minlength="8" required />
               <label for="password">Password</label>
-              <button class="btn btn-light toggle-password-btn" type="button" id="togglePassword" aria-label="Show password">
+              <div class="d-flex">
+                <input
+                class="form-control"
+                name="password"
+                type="password"
+                id="password"
+                placeholder=" "
+                minlength="8"
+                required
+              />
+              
+              <button
+                class="toggle-password-btn"
+                type="button"
+                id="togglePassword"
+                aria-label="Show password"
+              >
                 <i class="fa-solid fa-eye"></i>
               </button>
+              </div>
+              
             </div>
-            <div class="invalid-feedback">Password must be at least 8 characters long.</div>
+            <div class="invalid-feedback">
+              Password must be at least 8 characters long.
+            </div>
           </div>
 
           <button type="submit" class="btn btn-info w-100 fw-semibold">
@@ -56,11 +135,71 @@
           </button>
         </form>
 
-        <p class="text-center text-muted mt-3 mb-0 small">
-          Already have an account? <a href="/login" class="text-info text-decoration-none">Login</a>
+        <p class="text-center         mt-3 mb-0 small">
+          Already have an account?
+          <a href="/login" class="text-info text-decoration-none">Login</a>
         </p>
       </div>
     </div>
   </div>
+</div> -->
+
+  <div class="row justify-content-center ">
+    <div class="col-md-6 col-lg-4 card bg-outline-info py-5 px-4 d-flex flex-column">
+      <h2 class="text-center">Register</h2>
+      <form method="post" action="/signup" novalidate class="needs-validation">
+        <div class="mb-3">
+          <label for="email" class="form-label small">EMAIL</label>
+          <input type="email" class="form-control" id="email" placeholder="john@gmail.com" name="email" required>
+          <div class="invalid-feedback">
+            Please enter a valid email address.
+          </div>
+        </div>
+
+        <button class="mb-3 btn btn-outline-info w-100 send-otp" type="button">Send OTP</button>
+        <div id="otp-msg" class="mb-4 text-center"></div>
+        <div id="otp-section" style="display:none; ">
+          <div class="mb-3">
+            <label for="otp" class="form-label small">Enter OTP</label>
+            <input type="text" class="form-control" id="otp" placeholder=" " name="otp" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" required>
+            <div class="invalid-feedback">
+              Please enter the OTP containing exactly 6 digits.
+            </div>
+          </div>
+          <button class="mb-3 btn btn-outline-success w-100 verify-email" type="button">Verify Email</button>
+          <div id="verification-msg" class="mb-4 text-center"></div>
+        </div>
+        
+        <div class="mb-3">
+          <label for="username" class="form-label small">USERNAME</label>
+          <input type="text" class="form-control" id="username" placeholder="john@workx" name="username" minlengh="3" required>
+          <div class="invalid-feedback">
+            Username is required.
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="pass" class="form-label small">PASSWORD</label>
+          <div class="input-group has-validation">
+            <input type="password" class="form-control" id="pass" name="pass"  placeholder="Create password" minlength="8" 
+              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$" required>
+            <button 
+              class="btn btn-outline-secondary toggle-password-btn"
+              type="button"
+              id="togglePassword"
+            >
+            <i class="fa-solid fa-eye"></i>
+          </button>
+          <div class="invalid-feedback">
+            Please create a password that is at least 8 characters long and contains at least one lowercase letter, one uppercase letter, and one digit.
+           </div>
+          </div> 
+           
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Sign up</button>
+      </form>
+   
+  </div>
 </div>
+
+
 <script src="/js/signup.js"></script>
