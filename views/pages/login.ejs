@@ -1,59 +1,61 @@
 <% layout("boilerplate.ejs") %>
 
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-5">
-      <div class="auth-card glass-card p-4 p-md-5 fade-in-up">
+<div class="w-100 d-flex justify-content-center">
+  
+    <div class="w-100  rounded-4 shadow" style="max-width: 390px;">
+      <div class=" p-4 p-md-5 ">
         <div class="text-center mb-4">
-          <div
-            class="mb-3 d-inline-flex align-items-center justify-content-center rounded-4"
-            style="
-              width: 72px;
-              height: 72px;
-              background: rgba(56, 189, 248, 0.14);
-            "
-          >
-            <i class="fa-solid fa-right-to-bracket fa-2x text-info"></i>
-          </div>
-          <h2 class="fw-bold mt-3">Welcome Back</h2>
-          <p class="     mb-0">Log in to continue.</p>
+          <h2 class="fw-bold fs-2">Welcome Back</h2>
+          <p class="fw-semibold fs-5  mb-0">Login to your account</p>
         </div>
 
         <form method="POST" action="/login" class="needs-validation" novalidate>
-          <div class="mb-4 floating-group">
+          <div class="mb-4 ">
+            <label for="username" class="form-label small fw-semibold">USERNAME</label>
             <input
-              class="form-control"
+              class="form-control border-secondary"
               name="username"
               type="text"
               id="username"
               placeholder=" "
+              autocomplete="username"
               required
             />
-            <label for="username">Username</label>
+            <div class="invalid-feedback">
+              Username is required.
+            </div>
+            
           </div>
 
-          <div class="mb-4 floating-group">
-            <div class="input-group align-items-center">
-              <span class="input-group-text"
-                ><i class="fa-solid fa-lock"></i
-              ></span>
-              <input
-                class="form-control"
+          <div class="mb-4">
+            <div>
+    
+              <label for="password" class="form-label small fw-semibold">PASSWORD</label>
+              <div class="input-group has-validation">
+                <input
+                class="form-control border-secondary"
                 name="password"
                 type="password"
                 id="password"
                 placeholder=" "
+                autocomplete="current-password"
                 required
               />
-              <label for="password">Password</label>
+              
               <button
-                class="btn toggle-password-btn"
+                class="btn toggle-password-btn btn btn-outline-secondary" 
                 type="button"
                 id="togglePassword"
                 aria-label="Show password"
               >
-                <i class="fa-solid fa-eye"></i>
+              <i class="fa-solid fa-eye "></i>
               </button>
+              <div class="invalid-feedback">
+                Password is required.
+              </div>
+              </div>
+              
+                
             </div>
           </div>
 
@@ -63,14 +65,15 @@
           </button>
         </form>
 
-        <p class="text-center      mb-0 small">
+        <p class="text-center fw-semibold mb-0">
           New user?
-          <a href="/signup" class="text-info text-decoration-none"
+          <a href="/signup" class="fw-semibold text-info text-decoration-none"
             >Create an account</a
           >
         </p>
       </div>
     </div>
   </div>
-</div>
+
 <script src="/js/login.js"></script>
+

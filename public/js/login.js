@@ -1,7 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
   const passwordInput = document.getElementById("password");
   const togglePasswordButton = document.getElementById("togglePassword");
+  const forms = document.querySelectorAll(".needs-validation");
 
+// to apply custom validation
+  forms.forEach((form) => {
+    form.addEventListener("submit", (event) => {
+      if(!form.checkValidity()){
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add("was-validated");
+    } )
+  });
+
+  //to toggle 
   if (passwordInput && togglePasswordButton) {
     togglePasswordButton.addEventListener("click", () => {
       const icon = togglePasswordButton.querySelector("i");

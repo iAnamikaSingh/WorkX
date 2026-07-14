@@ -8,14 +8,14 @@ const router = express.Router();
 router.post("/api/send-otp", async (req, res) => {
   try {
     const { email } = req.body || {};
-    const normalizedEmail = email.trim().toLowerCase();
-    if (!normalizedEmail || typeof normalizedEmail !== "string") {
+    
+    if (!email || typeof normalizedEmail !== "string") {
       return res.status(400).json({
         success: false,
         message: "A valid email is required",
       });
     }
-    
+    const normalizedEmail = email.trim().toLowerCase();
     // generate 6-digit otp
     const otp = crypto.randomInt(100000, 1000000);
 

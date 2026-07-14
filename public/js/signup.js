@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const otpMsg = document.getElementById("otp-msg");
   const verifyEmailBtn = document.querySelector(".verify-email");
   const forms = document.querySelectorAll(".needs-validation");
+  const signupBtn = document.getElementById("signup-btn");
   forms.forEach((form) => {
     form.addEventListener("submit", (event) => {
       if(!form.checkValidity()){
@@ -112,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const otpInput = document.getElementById("otp");
     if(!otpInput.value.trim()){
       alert("Please enter OTP to verify email");
+      return;
     }
     const res = await fetch("/api/verify-otp", {
       method:"POST",
@@ -145,6 +147,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
   });
+
+  // Sign up Button 
   
   // End
 })
