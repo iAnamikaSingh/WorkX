@@ -2,98 +2,104 @@ import express from "express";
 import crypto from "crypto";
 import Otp from "../models/otp.js";
 import transporter from "../utils/mailer.js";
+
 const router = express.Router();
 
-//API to send otp
+// ======================
+// Send OTP
+// ======================
 router.post("/api/send-otp", async (req, res) => {
   try {
     const { email } = req.body || {};
-    
-    if (!email || typeof normalizedEmail !== "string") {
+
+    // Validate email
+    if (!email || typeof email !== "string") {
       return res.status(400).json({
         success: false,
         message: "A valid email is required",
       });
     }
-    const normalizedEmail = email.trim().toLowerCase();
-    // generate 6-digit otp
-    const otp = crypto.randomInt(100000, 1000000);
 
-    // delete the previous otp for the same email
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Generate 6-digit OTP
+    const otp = crypto.randomInt(100000, 1000000).toString();
+
+    // Delete previous OTP (if any)
     await Otp.deleteOne({ email: normalizedEmail });
 
-    //save otp
+    // Save new OTP
     await Otp.create({
       email: normalizedEmail,
-      otp: otp.toString(),
+      otp,
     });
 
-    //send otp to email
+    // Send email
     await transporter.sendMail({
       from: '"WorkX" <workx.noreply@gmail.com>',
       to: normalizedEmail,
       subject: "Verify Your Email - WorkX",
       html: `
-          <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
-            <div style="width:100%;  max-width: 500px; margin: auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-      
-              <!-- Header -->
-              <div style="background:rgb(59, 184, 206); color: white; text-align: center; padding: 16px;">
-                <h1 style="margin: 0;">WorkX</h1>
-              </div>
-      
-              <!-- Body -->
-              <div style="padding: 20px; line-height:1.6; color: #333; word-break: break-word;">
-                <h2 style="margin-top: 0">Hello,</h2>
-      
-                <p>
-                  Here is your One-Time Password (OTP) for email verification on <strong>WorkX</strong>.
-                </p>
-                
-                <div style="text-align:center;">
-                  <div style="
-                  border: 2px dashed rgb(59, 184, 206);
-                  border-radius:4px;
-                  padding:6px 16px;
-                  font-size:24px;
-                  color:rgb(59, 184, 206);
+        <div style="font-family: Arial, sans-serif; background:#f4f4f4; padding:20px;">
+          <div style="max-width:500px; margin:auto; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+
+            <div style="background:#3bb8ce; color:white; text-align:center; padding:16px;">
+              <h1 style="margin:0;">WorkX</h1>
+            </div>
+
+            <div style="padding:20px; color:#333; line-height:1.6;">
+              <h2>Hello,</h2>
+
+              <p>
+                Here is your One-Time Password (OTP) for email verification on
+                <strong>WorkX</strong>.
+              </p>
+
+              <div style="text-align:center; margin:20px 0;">
+                <div style="
                   display:inline-block;
+                  padding:8px 18px;
+                  border:2px dashed #3bb8ce;
+                  border-radius:5px;
+                  font-size:24px;
                   letter-spacing:4px;
-                  background-color:rgb(240, 248, 255);
-                  ">
+                  color:#3bb8ce;
+                  background:#f0f8ff;">
                   ${otp}
                 </div>
-                </div>
-                
-                <p>
-                  This OTP will be valid for next <strong>10 minutes</strong>.
-                </P>
-                <p>
-                  If you did not request this verification, you can safely ignore this email.
-                </p>
-      
-                <p style="margin-top: 30px;">
+              </div>
+
+              <p>This OTP is valid for <strong>10 minutes</strong>.</p>
+
+              <p>
+                If you did not request this verification, you can safely ignore
+                this email.
+              </p>
+
+              <p style="margin-top:30px;">
                 Best regards,<br>
                 <strong>Team WorkX</strong>
-                </p>
-       
-                <hr style="margin: 30px 0;">
-      
-                <p style="font-size: 13px; color: #777;">
-                  This is an automated email. Please do not reply.
-                </p>
-              </div>
-      
+              </p>
+
+              <hr>
+
+              <p style="font-size:13px; color:#777;">
+                This is an automated email. Please do not reply.
+              </p>
             </div>
+
           </div>
-        `,
+        </div>
+      `,
     });
+
     return res.status(200).json({
       success: true,
-      message: "OTP sent to email (Valid for 10 min)",
+      message: "OTP sent to email (Valid for 10 minutes).",
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -101,55 +107,68 @@ router.post("/api/send-otp", async (req, res) => {
   }
 });
 
-// verify otp
+// ======================
+// Verify OTP
+// ======================
 router.post("/api/verify-otp", async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { email, otp } = req.body || {};
+
     if (!email || !otp) {
       return res.status(400).json({
         success: false,
-        message: "Email and OTP are required",
+        message: "Email and OTP are required.",
       });
     }
+
     const normalizedEmail = email.trim().toLowerCase();
-    // check otp
+
+    // Find OTP document
     const otpDoc = await Otp.findOne({ email: normalizedEmail });
+
     if (!otpDoc) {
       return res.status(400).json({
         success: false,
-        message: "OTP not found or expired",
+        message: "OTP not found or expired.",
       });
     }
-    //  Check expiry
+
+    // Check expiry
     if (otpDoc.expiresAt < new Date()) {
       await Otp.deleteOne({ email: normalizedEmail });
 
       return res.status(400).json({
         success: false,
-        message: "OTP has expired",
+        message: "OTP has expired.",
       });
     }
-    // compare OTP
 
-    if (otpDoc.otp !== otp) {
+    // Compare OTP
+    if (otpDoc.otp !== String(otp)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid OTP",
+        message: "Invalid OTP.",
       });
     }
+
+    // Store verification in session
     req.session.verifiedEmail = normalizedEmail;
-    // remove otp
+
+    // Delete OTP after successful verification
     await Otp.deleteOne({ email: normalizedEmail });
+
     return res.status(200).json({
       success: true,
-      message: "OTP verified",
+      message: "OTP verified successfully.",
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
+
     return res.status(500).json({
       success: false,
-      message: "Invalid OTP",
+      message: "Internal server error",
     });
   }
 });
+
 export default router;

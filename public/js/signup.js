@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let resendTimer;
   const otpSection = document.getElementById("otp-section");
   const verificationMsg = document.getElementById("verification-msg");
-  const passwordInput = document.querySelector("#pass");
+  const passwordInput = document.querySelector("#password");
   const togglePasswordBtn = document.querySelector("#togglePassword");
   const sendOtpBtn = document.querySelector(".send-otp");
   const emailInput = document.querySelector("#email");
@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Please enter your email before requesting an OTP");
       return;
     }
+    
     sendOtpBtn.disabled = true;
     sendOtpBtn.textContent = "Sending...";
     const response = await fetch("/api/send-otp",{
@@ -118,7 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const res = await fetch("/api/verify-otp", {
       method:"POST",
       headers:{"Content-Type": "application/json"},
-      body:JSON.stringify({email:email.value.trim(), otp: otpInput.value.trim()})
+      body:JSON.stringify({email:emailInput.value.trim(), otp: otpInput.value.trim()})
     });
     const data = await res.json();
     
@@ -148,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
   });
 
-  // Sign up Button 
+
   
   // End
 })
