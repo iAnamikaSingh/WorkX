@@ -4,6 +4,38 @@ import User from "../models/user.js";
 
 const router = express.Router();
 
+router.get("/api/check-username", async (req, res) => {
+
+  try {
+
+      const username = req.query.username?.trim().toLowerCase();
+
+      if (!username) {
+          return res.json({
+              available: false
+          });
+      }
+
+      const existingUser = await User.findOne({
+          username
+      });
+
+      res.json({
+          available: !existingUser
+      });
+
+  } catch (err) {
+
+      console.error(err);
+
+      res.status(500).json({
+          available: false
+      });
+
+  }
+
+});
+
 router.get("/signup", (req, res) => {
   res.render("signup.ejs", {
     title: "Sign Up",

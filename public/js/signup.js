@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupBtn = document.getElementById("signup-btn");
   const usernameInput = document.getElementById("username");
   const usernameFeedback = document.getElementById("usernameFeedback");
-
+  const usernameStatus = document.getElementById("usernameStatus");
   //Displaying invalid-feedback based on username input value
 
   usernameInput.addEventListener("invalid", () => {
@@ -33,6 +33,58 @@ document.addEventListener("DOMContentLoaded", () => {
       form.classList.add("was-validated");
     } )
   });
+  
+  //Check whether username exists during signup 
+  let timeoutId;
+
+  usernameInput.addEventListener("input", () => {
+
+    clearTimeout(timeoutId);
+
+    const username = usernameInput.value.trim();
+
+    // Clear message
+    usernameStatus.textContent = "";
+
+    // Don't check until username is valid length
+    if (username.length < 3) {
+        return;
+    }
+
+    usernameStatus.textContent = "Checking...";
+
+    timeoutId = setTimeout(async () => {
+
+        try {
+
+            const response = await fetch(
+                `/api/check-username?username=${encodeURIComponent(username)}`
+            );
+
+            const data = await response.json();
+
+            if (data.available) {
+
+                usernameStatus.textContent = "✓ Username available";
+                usernameStatus.className = "text-success small";
+
+            } else {
+
+                usernameStatus.textContent = "✗ Username already taken";
+                usernameStatus.className = "text-danger small";
+
+            }
+
+        } catch (err) {
+
+            usernameStatus.textContent = "";
+            console.error(err);
+
+        }
+
+    }, 500);
+
+});
 
   // Toggle visibility of password
   
