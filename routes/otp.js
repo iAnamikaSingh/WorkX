@@ -1,6 +1,7 @@
 import express from "express";
 import crypto from "crypto";
 import Otp from "../models/otp.js";
+import User from "../models/user.js";
 import transporter from "../utils/mailer.js";
 
 const router = express.Router();
@@ -22,6 +23,14 @@ router.post("/api/send-otp", async (req, res) => {
 
     const normalizedEmail = email.trim().toLowerCase();
 
+    //Check whether user with the same email exists
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return res.status(409).json({
+          success: false,
+          message: "A user with this email already exists."
+      });
+  }
     // Generate 6-digit OTP
     const otp = crypto.randomInt(100000, 1000000).toString();
 

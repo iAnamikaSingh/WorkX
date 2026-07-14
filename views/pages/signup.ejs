@@ -1,66 +1,111 @@
 <% layout("boilerplate.ejs") %>
 
 <div class="w-100 d-flex justify-content-center">
-  <div class="w-100  rounded-4 shadow  p-4 p-md-5 " style="max-width: 390px; ">
-      <h2 class="text-center fw-bold">WorkX</h2>
-      <p class="text-center fw-semibold fs-5">Create your account</p>
+  <div class="w-100 rounded-4 shadow p-4 p-md-5" style="max-width: 390px">
+    <h2 class="text-center fw-bold">WorkX</h2>
+    <p class="text-center fw-semibold fs-5">Create your account</p>
 
-      <form method="post" action="/signup" novalidate class="needs-validation">
-        <div class="mb-3">
-          <label for="email" class="form-label small fw-semibold">EMAIL</label>
-          <input type="email" class="form-control border-secondary" id="email" placeholder="john@gmail.com" name="email" required>
-          <div class="invalid-feedback">
-            Please enter a valid email address.
-          </div>
-        </div>
+    <form method="post" action="/signup" novalidate class="needs-validation">
+      <div class="mb-3">
+        <label for="email" class="form-label small fw-semibold">EMAIL</label>
+        <input
+          type="email"
+          class="form-control border-secondary"
+          id="email"
+          placeholder="john@gmail.com"
+          name="email"
+          required
+        />
+        <div class="invalid-feedback">Please enter a valid email address.</div>
+      </div>
 
-        <button class="mb-3 btn btn-outline-info w-100 send-otp" type="button">Send OTP</button>
-        <div id="otp-msg" class="mb-4 text-center"></div>
-        <div id="otp-section" style="display:none; ">
-          <div class="mb-3">
-            <label for="otp" class="form-label small">Enter OTP</label>
-            <input type="text" class="form-control border border-info" id="otp" placeholder=" " name="otp" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" required>
-            <div class="invalid-feedback">
-              Please enter the OTP containing exactly 6 digits.
-            </div>
-          </div>
-          <button class="mb-3 btn btn-outline-success w-100 verify-email" type="button">Verify Email</button>
-          <div id="verification-msg" class="mb-4 text-center"></div>
-        </div>
-        
+      <button class="mb-3 btn btn-outline-info w-100 send-otp" type="button">
+        Send OTP
+      </button>
+      <div id="otp-msg" class="mb-4 text-center"></div>
+      <div id="otp-section" style="display: none">
         <div class="mb-3">
-          <label for="username" class="form-label small fw-semibold">USERNAME</label>
-          <input type="text" class="form-control border-secondary" id="username" placeholder="john@workx" name="username" minlengh="3" required>
+          <label for="otp" class="form-label small">Enter OTP</label>
+          <input
+            type="text"
+            class="form-control border border-info"
+            id="otp"
+            placeholder=" "
+            name="otp"
+            maxlength="6"
+            inputmode="numeric"
+            pattern="[0-9]{6}"
+            required
+          />
           <div class="invalid-feedback">
-            Username is required.
+            Please enter the OTP containing exactly 6 digits.
           </div>
         </div>
-        <div class="mb-3">
-          <label for="password" class="form-label small fw-semibold">PASSWORD</label>
-          <div class="input-group has-validation">
-            <input type="password" class="form-control border-secondary" id="password" name="password"  placeholder="Create password" minlength="8" 
-              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$" required>
-            <button 
-              class="btn btn-outline-secondary toggle-password-btn"
-              type="button"
-              id="togglePassword"
-            >
+        <button
+          class="mb-3 btn btn-outline-success w-100 verify-email"
+          type="button"
+        >
+          Verify Email
+        </button>
+        <div id="verification-msg" class="mb-4 text-center"></div>
+      </div>
+
+      <div class="mb-3">
+        <label for="username" class="form-label small fw-semibold"
+          >USERNAME</label
+        >
+        <input
+          minlength="3"
+          maxlength="20"
+          type="text"
+          class="form-control border-secondary"
+          id="username"
+          placeholder="john@workx"
+          name="username"
+          required
+        />
+        <div class="invalid-feedback" id="usernameFeedback">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label small fw-semibold"
+          >PASSWORD</label
+        >
+        <div class="input-group has-validation">
+          <input
+            type="password"
+            class="form-control border-secondary"
+            id="password"
+            name="password"
+            placeholder="Create password"
+            minlength="8"
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$"
+            required
+          />
+          <button
+            class="btn btn-outline-secondary toggle-password-btn"
+            type="button"
+            id="togglePassword"
+          >
             <i class="fa-solid fa-eye"></i>
           </button>
           <div class="invalid-feedback">
-            Please create a password that is at least 8 characters long and contains at least one lowercase letter, one uppercase letter, and one digit.
-           </div>
-          </div> 
-           
+            Please create a password that is at least 8 characters long and
+            contains at least one lowercase letter, one uppercase letter, and
+            one digit.
+          </div>
         </div>
-        <button type="submit" class="btn btn-info w-100 fw-semibold mb-3 mt-3" id="signup-btn">
-          <i class="fa-solid fa-right-to-bracket me-2"></i>
-          Sign up
-        </button>
-      </form>
-   
+      </div>
+      <button
+        type="submit"
+        class="btn btn-info w-100 fw-semibold mb-3 mt-3"
+        id="signup-btn"
+      >
+        <i class="fa-solid fa-right-to-bracket me-2"></i>
+        Sign up
+      </button>
+    </form>
   </div>
 </div>
-
 
 <script src="/js/signup.js"></script>

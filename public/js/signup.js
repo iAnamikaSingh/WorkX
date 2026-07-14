@@ -11,6 +11,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const verifyEmailBtn = document.querySelector(".verify-email");
   const forms = document.querySelectorAll(".needs-validation");
   const signupBtn = document.getElementById("signup-btn");
+  const usernameInput = document.getElementById("username");
+  const usernameFeedback = document.getElementById("usernameFeedback");
+
+  //Displaying invalid-feedback based on username input value
+
+  usernameInput.addEventListener("invalid", () => {
+    if(username.validity.valueMissing) {
+      usernameFeedback.textContent = "Username is required";
+    }else if(username.validity.tooShort || username.validity.tooLong) {
+      usernameFeedback.textContent = "Username must be between 3 and 20 characters long"
+    }
+  })  
+
   forms.forEach((form) => {
     form.addEventListener("submit", (event) => {
       if(!form.checkValidity()){

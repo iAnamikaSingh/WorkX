@@ -17,6 +17,15 @@ router.post("/signup", async (req, res) => {
     const normalizedUsername = username?.trim().toLowerCase();
     const normalizedEmail = email?.trim().toLowerCase();
 
+    if (
+      !normalizedUsername ||
+      normalizedUsername.length < 3 ||
+      normalizedUsername.length > 20
+  ) {
+      req.session.error = "Username must be between 3 and 20 characters.";
+      return res.redirect("/signup");
+  }
+
     // Check whether the email has been verified
     if (req.session.verifiedEmail !== normalizedEmail) {
       req.session.error = "Please verify your email first.";
