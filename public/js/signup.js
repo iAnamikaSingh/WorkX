@@ -15,11 +15,36 @@ document.addEventListener("DOMContentLoaded", () => {
   const usernameFeedback = document.getElementById("usernameFeedback");
   const usernameStatus = document.getElementById("usernameStatus");
   //Displaying invalid-feedback based on username input value
+  let verifiedEmail = null;
+  emailInput.addEventListener("input", () => {
 
+    const currentEmail = emailInput.value.trim().toLowerCase();
+
+    if (verifiedEmail && currentEmail !== verifiedEmail) {
+
+        verifiedEmail = null;
+
+        clearInterval(resendTimer);
+
+        sendOtpBtn.disabled = false;
+        sendOtpBtn.textContent = "Send OTP";
+
+        sendOtpBtn.classList.remove("btn-success");
+        sendOtpBtn.classList.add("btn-outline-info");
+
+        document.getElementById("otp").value = "";
+        otpSection.style.display = "none";
+        verificationMsg.textContent = "";
+        verificationMsg.classList.remove("text-success", "text-danger");
+        otpMsg.textContent = "";
+        verifyEmailBtn.disabled = false;
+    }
+
+});
   usernameInput.addEventListener("invalid", () => {
-    if(username.validity.valueMissing) {
+    if(usernameInput.validity.valueMissing) {
       usernameFeedback.textContent = "Username is required";
-    }else if(username.validity.tooShort || username.validity.tooLong) {
+    }else if(usernameInput.validity.tooShort || usernameInput.validity.tooLong) {
       usernameFeedback.textContent = "Username must be between 3 and 20 characters long"
     }
   })  
@@ -103,116 +128,137 @@ document.addEventListener("DOMContentLoaded", () => {
     } );
   }
 
-  //Sending OTP to email
-  
-  sendOtpBtn.addEventListener("click", async () => {
-    const email = emailInput.value.trim().toLowerCase();
-    if(!email){
-      alert("Please enter your email before requesting an OTP");
-      return;
-    }
-    
-    sendOtpBtn.disabled = true;
-    sendOtpBtn.textContent = "Sending...";
-    const response = await fetch("/api/send-otp",{
-      method:"POST",
-      headers:{"Content-Type" : "application/json"} ,
-      body: JSON.stringify({email: email})
-    }
-    
-  )    
-  const data = await response.json();
-  if(data.success){
-    otpMsg.classList.remove("text-danger");
-    otpMsg.classList.add("text-success"); 
+  // Sending OTP
 
-    // Resend OTP
-    function startResendTimer() {
-      clearInterval(resendTimer);
-      let timeLeft = 180; // 3 minutes
-      resendTimer = setInterval(() => {
-  
+sendOtpBtn.addEventListener("click", async () => {
+  const email = emailInput.value.trim().toLowerCase();
+
+  if (!email) {
+    alert("Please enter your email before requesting an OTP");
+    return;
+  }
+
+  sendOtpBtn.disabled = true;
+  sendOtpBtn.textContent = "Sending...";
+
+  try {
+    const response = await fetch("/api/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      otpMsg.classList.remove("text-danger");
+      otpMsg.classList.add("text-success");
+
+      // Resend OTP
+      function startResendTimer() {
+        clearInterval(resendTimer);
+
+        let timeLeft = 180;
+
+        resendTimer = setInterval(() => {
           const minutes = Math.floor(timeLeft / 60);
           const seconds = timeLeft % 60;
-  
-          sendOtpBtn.textContent =
-              `Resend OTP (${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")})`;
-  
+
+          sendOtpBtn.textContent = `Resend OTP (${String(minutes).padStart(
+            2,
+            "0"
+          )}:${String(seconds).padStart(2, "0")})`;
+
           timeLeft--;
-  
+
           if (timeLeft < 0) {
-  
-              clearInterval(resendTimer);
-  
-              sendOtpBtn.disabled = false;
-              sendOtpBtn.textContent = "Resend OTP";
-  
+            clearInterval(resendTimer);
+
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.textContent = "Resend OTP";
           }
-  
-      }, 1000);
-  
-  }
-  startResendTimer()
-    
+        }, 1000);
+      }
 
-    //Display OTP section
-    otpSection.style.display = "block";
-    verificationMsg.textContent = "";
-    
-  }else{
-    otpMsg.classList.remove("text-success");
-    otpMsg.classList.add("text-danger");
-    sendOtpBtn.textContent = "Send OTP";
+      startResendTimer();
+
+      // Display OTP section
+      otpSection.style.display = "block";
+      verificationMsg.textContent = "";
+    } else {
+      otpMsg.classList.remove("text-success");
+      otpMsg.classList.add("text-danger");
+
+      sendOtpBtn.disabled = false;
+      sendOtpBtn.textContent = "Send OTP";
+    }
+
+    alert(data.message);
+  } catch (err) {
+    console.error(err);
+
+    alert("Unable to send OTP. Please try again.");
+
     sendOtpBtn.disabled = false;
+    sendOtpBtn.textContent = "Send OTP";
   }
-  
-
-  alert(data.message);
-  
-  });
-  
+});
 
 
   //Verify Email
- 
-  verifyEmailBtn.addEventListener("click", async () => {
-    const otpInput = document.getElementById("otp");
-    if(!otpInput.value.trim()){
-      alert("Please enter OTP to verify email");
-      return;
-    }
+
+verifyEmailBtn.addEventListener("click", async () => {
+  const otpInput = document.getElementById("otp");
+
+  if (!otpInput.value.trim()) {
+    alert("Please enter OTP to verify email");
+    return;
+  }
+
+  try {
     const res = await fetch("/api/verify-otp", {
-      method:"POST",
-      headers:{"Content-Type": "application/json"},
-      body:JSON.stringify({email:emailInput.value.trim(), otp: otpInput.value.trim()})
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: emailInput.value.trim(),
+        otp: otpInput.value.trim(),
+      }),
     });
+
     const data = await res.json();
-    
-    if(data.success){
+
+    if (data.success) {
+      verifiedEmail = emailInput.value.trim().toLowerCase();
+
       verificationMsg.classList.remove("text-danger");
       verificationMsg.classList.add("text-success");
       verificationMsg.textContent = data.message;
-      // otp section removal
-      setTimeout(() => {
 
+      setTimeout(() => {
         otpSection.style.display = "none";
+
         clearInterval(resendTimer);
+
         sendOtpBtn.textContent = "Email Verified";
 
         sendOtpBtn.classList.remove("btn-outline-info");
         sendOtpBtn.classList.add("btn-success");
 
         sendOtpBtn.disabled = true;
-        otpMsg.textContent = "";
 
-    }, 1000);
-    }else{
+        otpMsg.textContent = "";
+      }, 1000);
+    } else {
       verificationMsg.classList.remove("text-success");
       verificationMsg.classList.add("text-danger");
       verificationMsg.textContent = data.message;
     }
-    
-  });
+  } catch (err) {
+    console.error(err);
+
+    alert("Unable to verify OTP. Please try again.");
+  }
+});
 
 
   
