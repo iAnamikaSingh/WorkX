@@ -17,6 +17,10 @@ An Express.js and EJS-powered simple web applicatin to organize topics, track pr
 - Bootstrap + EJS UI with reusable navbar/footer layout
 - Topic normalization utility to clean submitted log data before save
 
+## Youtube video Link
+```bash
+https://youtu.be/hynzG2NwUWw
+```
 
 ## 💻Technologies Used
 - Node.js — server-side runtime
