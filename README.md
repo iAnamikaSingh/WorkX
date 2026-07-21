@@ -49,8 +49,8 @@ cd WorkX
 ```bash
 npm install
 ```
-4. [Install MongoDB Server]
-   (https://www.mongodb.com/try/download/community)
+4. Install MongoDB Server
+   https://www.mongodb.com/try/download/community
 5. Start the application
 ```bash
 nodemon index.js
