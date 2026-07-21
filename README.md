@@ -1,6 +1,6 @@
 # WikiInspiration 
 An Express.js and EJS-powered simple web applicatin to organize topics, track progress, and build a consistent learning habit.
-![HomePage](./screenshots/Screenshot1.png)
+![HomePage](public/screenshots/screenshot1.png)
 
 ## 🎨Features 
 - User authentication with signup, login, and logout
@@ -61,6 +61,3 @@ nodemon index.js
 http://localhost:8000/
 ```
 
-
-http://localhost:8080
-```
