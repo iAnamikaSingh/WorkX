@@ -1,4 +1,5 @@
 # WorkX
+
 An Express.js and EJS-powered simple web applicatin to organize topics, track progress, and build a consistent learning habit.
 ![HomePage](public/screenshots/screenshot1.png)
 
