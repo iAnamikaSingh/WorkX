@@ -23,7 +23,7 @@ import otpRoutes from "./routes/otp.js";
 dotenv.config();
 
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -130,15 +130,15 @@ app.get("/", (req, res) => {
 
 // Database + Server
 async function main() {
-  await mongoose.connect(process.env.MONGO_URL);
-
-  console.log("DB connected");
-
-  app.listen(PORT, () => {
+  try{
+    app.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
   });
+  await mongoose.connect(process.env.MONGO_URL);
+  console.log("DB connected");
+  } catch(err){
+    console.log(err);
+  }
+  
 }
-
-main().catch((err) => {
-  console.log(err);
-});
+main();
