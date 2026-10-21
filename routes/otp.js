@@ -5,6 +5,11 @@ import User from "../models/user.js";
 import transporter from "../utils/mailer.js";
 
 const router = express.Router();
+const senderEmail = process.env.BREVO_SENDER_EMAIL?.trim().toLowerCase();
+
+if (!senderEmail) {
+  throw new Error("BREVO_SENDER_EMAIL must be set to a verified Brevo sender.");
+}
 
 // ======================
 // Send OTP
@@ -44,11 +49,12 @@ router.post("/api/send-otp", async (req, res) => {
     });
 
     // Send email
-    await transporter.sendMail({
-      from: '"WorkX" <workx.noreply@gmail.com>',
-      to: normalizedEmail,
-      subject: "Verify Your Email - WorkX",
-      html: `
+    try {
+      const delivery = await transporter.sendMail({
+        from: `"WorkX" <${senderEmail}>`,
+        to: normalizedEmail,
+        subject: "Verify Your Email - WorkX",
+        html: `
         <div style="font-family: Arial, sans-serif; background:#f4f4f4; padding:20px;">
           <div style="max-width:500px; margin:auto; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
 
@@ -100,11 +106,43 @@ router.post("/api/send-otp", async (req, res) => {
           </div>
         </div>
       `,
-    });
+      });
+
+      const recipientAccepted = delivery.accepted.some(
+        (recipient) => String(recipient).toLowerCase() === normalizedEmail,
+      );
+
+      if (!recipientAccepted) {
+        console.error("Brevo did not accept the OTP recipient:", {
+          messageId: delivery.messageId,
+          response: delivery.response,
+          acceptedCount: delivery.accepted.length,
+          rejectedCount: delivery.rejected.length,
+        });
+        await Otp.deleteOne({ email: normalizedEmail, otp });
+        return res.status(502).json({
+          success: false,
+          message: "The email provider did not accept this address. Check the address and try again.",
+        });
+      }
+
+      console.info("Brevo accepted an OTP email for delivery:", {
+        messageId: delivery.messageId,
+        response: delivery.response,
+      });
+    } catch (err) {
+      console.error("Brevo OTP delivery failed:", err);
+      await Otp.deleteOne({ email: normalizedEmail, otp });
+      return res.status(502).json({
+        success: false,
+        message: "The email could not be sent. Please try again shortly.",
+      });
+    }
 
     return res.status(200).json({
       success: true,
-      message: "OTP sent to email (Valid for 10 minutes).",
+      message:
+        "Brevo accepted the email for delivery. Check your inbox and spam folder; delivery may take a short time.",
     });
   } catch (err) {
     console.error(err);

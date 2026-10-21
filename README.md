@@ -53,13 +53,20 @@ npm install
 ```
 4. Install MongoDB Server
    https://www.mongodb.com/try/download/community
-5. Start the application
+5. Configure `.env` with the database and session settings, plus your Brevo SMTP credentials when email OTP is enabled:
+```env
+MONGO_URL=mongodb://127.0.0.1:27017/workx
+SESSION_SECRET=use-a-long-random-secret
+BREVO_SMTP_LOGIN=your-brevo-smtp-login
+BREVO_SMTP_KEY=your-brevo-smtp-key
+BREVO_SENDER_EMAIL=your-verified-sender-email
+```
+6. Start the application
 ```bash
 nodemon index.js
 ```
 
-6. Open your browser and visit
+7. Open your browser and visit
 ```bash
 http://localhost:8000/
 ```
-

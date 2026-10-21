@@ -133,26 +133,34 @@ document.addEventListener("DOMContentLoaded", () => {
 sendOtpBtn.addEventListener("click", async () => {
   const email = emailInput.value.trim().toLowerCase();
 
-  if (!email) {
-    alert("Please enter your email before requesting an OTP");
+  if (!emailInput.checkValidity()) {
+    emailInput.reportValidity();
     return;
   }
 
   sendOtpBtn.disabled = true;
   sendOtpBtn.textContent = "Sending...";
+  otpMsg.textContent = "Sending your verification code...";
+  otpMsg.classList.remove("text-success", "text-danger");
+  let otpSent = false;
+  const controller = new AbortController();
+  const requestTimeout = setTimeout(() => controller.abort(), 50_000);
 
   try {
     const response = await fetch("/api/send-otp", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
+      signal: controller.signal,
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => null);
 
-    if (data.success) {
+    if (response.ok && data?.success) {
+      otpSent = true;
       otpMsg.classList.remove("text-danger");
       otpMsg.classList.add("text-success");
+      otpMsg.textContent = data.message;
 
       // Resend OTP
       function startResendTimer() {
@@ -188,19 +196,23 @@ sendOtpBtn.addEventListener("click", async () => {
     } else {
       otpMsg.classList.remove("text-success");
       otpMsg.classList.add("text-danger");
-
+      otpMsg.textContent =
+        data?.message || "Unable to send the verification code. Please try again.";
+    }
+  } catch (err) {
+    console.error(err);
+    otpMsg.classList.remove("text-success");
+    otpMsg.classList.add("text-danger");
+    otpMsg.textContent =
+      err.name === "AbortError"
+        ? "Sending timed out. Please try again."
+        : "Unable to reach the email service. Please try again.";
+  } finally {
+    clearTimeout(requestTimeout);
+    if (!otpSent) {
       sendOtpBtn.disabled = false;
       sendOtpBtn.textContent = "Send OTP";
     }
-
-    alert(data.message);
-  } catch (err) {
-    console.error(err);
-
-    alert("Unable to send OTP. Please try again.");
-
-    sendOtpBtn.disabled = false;
-    sendOtpBtn.textContent = "Send OTP";
   }
 });
 
@@ -264,4 +276,3 @@ verifyEmailBtn.addEventListener("click", async () => {
   
   // End
 })
-
