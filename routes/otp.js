@@ -141,8 +141,7 @@ router.post("/api/send-otp", async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message:
-        "Brevo accepted the email for delivery. Check your inbox and spam folder; delivery may take a short time.",
+      message: "Message has been sent. Valid for 10 min",
     });
   } catch (err) {
     console.error(err);
