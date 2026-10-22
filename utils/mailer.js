@@ -1,35 +1,16 @@
-import nodemailer from "nodemailer";
+import { BrevoClient } from "@getbrevo/brevo";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const smtpLogin = process.env.BREVO_SMTP_LOGIN;
-const smtpKey = process.env.BREVO_SMTP_KEY;
+const apiKey = process.env.BREVO_API_KEY;
 
-if (!smtpLogin || !smtpKey) {
+if (!apiKey) {
   throw new Error(
-    "BREVO_SMTP_LOGIN and BREVO_SMTP_KEY environment variables are required for email sending.",
+    "BREVO_API_KEY is required for email sending.",
   );
 }
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  connectionTimeout: 15_000,
-  greetingTimeout: 15_000,
-  socketTimeout: 45_000,
-  auth: {
-    user: smtpLogin,
-    pass: smtpKey,
-  },
-});
-transporter.verify((error) => {
-  if (error) {
-    console.error("Brevo SMTP verification failed:", error);
-  } else {
-    console.log("Brevo SMTP server is ready");
-  }
-});
+const apiInstance = new BrevoClient({ apiKey });
 
-export default transporter;
+export default apiInstance;

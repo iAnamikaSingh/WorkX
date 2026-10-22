@@ -2,7 +2,7 @@ import express from "express";
 import crypto from "crypto";
 import Otp from "../models/otp.js";
 import User from "../models/user.js";
-import transporter from "../utils/mailer.js";
+import brevoApi from "../utils/mailer.js";
 
 const router = express.Router();
 const senderEmail = process.env.BREVO_SENDER_EMAIL?.trim().toLowerCase();
@@ -50,11 +50,11 @@ router.post("/api/send-otp", async (req, res) => {
 
     // Send email
     try {
-      const delivery = await transporter.sendMail({
-        from: `"WorkX" <${senderEmail}>`,
-        to: normalizedEmail,
+      const delivery = await brevoApi.transactionalEmails.sendTransacEmail({
+        sender: { email: senderEmail, name: "WorkX" },
+        to: [{ email: normalizedEmail }],
         subject: "Verify Your Email - WorkX",
-        html: `
+        htmlContent: `
         <div style="font-family: Arial, sans-serif; background:#f4f4f4; padding:20px;">
           <div style="max-width:500px; margin:auto; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
 
@@ -108,27 +108,8 @@ router.post("/api/send-otp", async (req, res) => {
       `,
       });
 
-      const recipientAccepted = delivery.accepted.some(
-        (recipient) => String(recipient).toLowerCase() === normalizedEmail,
-      );
-
-      if (!recipientAccepted) {
-        console.error("Brevo did not accept the OTP recipient:", {
-          messageId: delivery.messageId,
-          response: delivery.response,
-          acceptedCount: delivery.accepted.length,
-          rejectedCount: delivery.rejected.length,
-        });
-        await Otp.deleteOne({ email: normalizedEmail, otp });
-        return res.status(502).json({
-          success: false,
-          message: "The email provider did not accept this address. Check the address and try again.",
-        });
-      }
-
       console.info("Brevo accepted an OTP email for delivery:", {
         messageId: delivery.messageId,
-        response: delivery.response,
       });
     } catch (err) {
       console.error("Brevo OTP delivery failed:", err);

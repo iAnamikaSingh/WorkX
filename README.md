@@ -27,7 +27,7 @@ https://youtu.be/hynzG2NwUWw
 - EJS + ejs-mate — view templates
 - Passport + passport-local + passport-local-mongoose — authentication
 - express-session + connect-mongo — session management with MongoDB storage
-- nodemailer — email sending for OTP verification
+- @getbrevo/brevo — email sending for OTP verification
 - dotenv — environment variable configuration
 - cookie-parser — cookie handling
 - method-override — support PUT/DELETE in forms
@@ -53,12 +53,11 @@ npm install
 ```
 4. Install MongoDB Server
    https://www.mongodb.com/try/download/community
-5. Configure `.env` with the database and session settings, plus your Brevo SMTP credentials when email OTP is enabled:
+5. Configure `.env` with the database and session settings, plus your Brevo API key when email OTP is enabled:
 ```env
 MONGO_URL=mongodb://127.0.0.1:27017/workx
 SESSION_SECRET=use-a-long-random-secret
-BREVO_SMTP_LOGIN=your-brevo-smtp-login
-BREVO_SMTP_KEY=your-brevo-smtp-key
+BREVO_API_KEY=your-brevo-api-key
 BREVO_SENDER_EMAIL=your-verified-sender-email
 ```
 6. Start the application
