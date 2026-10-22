@@ -168,6 +168,7 @@ router.post("/api/verify-otp", async (req, res) => {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
+    const normalizedOtp = otp.trim();
 
     // Find OTP document
     const otpDoc = await Otp.findOne({ email: normalizedEmail });
@@ -190,7 +191,7 @@ router.post("/api/verify-otp", async (req, res) => {
     }
 
     // Compare OTP
-    if (otpDoc.otp !== String(otp)) {
+    if (otpDoc.otp !== String(normalizedOtp)) {
       return res.status(400).json({
         success: false,
         message: "Invalid OTP.",
