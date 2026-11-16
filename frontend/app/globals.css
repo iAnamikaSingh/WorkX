@@ -21,3 +21,51 @@
 .auth-steps{display:flex;gap:8px;margin:22px 0}
 .auth-step{flex:1;padding:9px;border:1px solid var(--line);border-radius:8px;color:var(--muted);font:10px 'DM Mono';text-align:center}
 .auth-step.active{border-color:var(--green);color:var(--green);background:#0c2116}
+
+
+.productivity-tabs{display:flex;gap:7px;overflow-x:auto;padding:16px 0;margin:8px 0 10px;border-bottom:1px solid var(--line)}
+.productivity-tabs button{display:flex;align-items:center;gap:7px;white-space:nowrap;padding:10px 12px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--muted);font-size:12px}
+.productivity-tabs button.active,.productivity-tabs button:hover{background:#10251a;border-color:#244a34;color:var(--green)}
+.productivity-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.productivity-card{background:var(--panel);border:1px solid #1b3024;border-radius:14px;padding:22px;margin-top:14px}
+.productivity-card h2{font-size:17px;margin:0 0 7px}
+.productivity-card .subtle{margin:0 0 18px}
+.stats-grid .stat-card span{display:flex;align-items:center;gap:7px}
+.activity-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:24px 0 12px}
+.activity-grid div{aspect-ratio:1;border-radius:5px;background:#18271f;border:1px solid #24372b}
+.activity-grid div.active{background:var(--green);border-color:var(--green);box-shadow:0 0 12px #00ed8a22}
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.quick-actions button{display:flex;align-items:center;gap:10px;text-align:left;background:#0b1b12;border:1px solid var(--line);color:var(--text);border-radius:9px;padding:14px;font-size:12px}
+.quick-actions svg{width:17px;color:var(--green)}
+.inline-form{display:flex;gap:9px;margin:18px 0;flex-wrap:wrap}
+.inline-form input,.inline-form select,.field input,.field textarea{min-width:0;flex:1;border:1px solid #294233;background:#09130e;color:var(--text);padding:12px 13px;border-radius:9px;outline:none}
+.inline-form input:focus,.inline-form select:focus,.field textarea:focus{border-color:var(--green)}
+.goal-list{display:grid;gap:12px;margin-top:20px}
+.goal-item{padding:15px;background:#0a1710;border:1px solid var(--line);border-radius:10px}
+.goal-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.goal-item .progress{margin:13px 0 9px}
+.goal-item .goal-row .btn{padding:7px 10px;font-size:10px;margin-left:5px}
+.task-row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid #1c3024;font-size:13px}
+.task-row:last-child{border-bottom:0}
+.task-row small{font:10px 'DM Mono';color:var(--muted)}
+.task-check{width:21px;height:21px;border-radius:6px;border:1px solid #49604f;background:transparent;color:#04130b;display:grid;place-items:center}
+.task-check.checked{background:var(--green);border-color:var(--green)}
+.completed{text-decoration:line-through;color:var(--muted)}
+.icon-action{border:0;background:transparent;color:var(--muted);display:inline-flex;align-items:center;padding:5px}
+.icon-action:hover{color:var(--green)}
+.note-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+.note-card{background:#0a1710;border:1px solid var(--line);border-radius:10px;padding:15px;min-width:0}
+.note-card p{font-size:12px;line-height:1.7;color:#b1c4b7;white-space:pre-wrap;overflow-wrap:anywhere}
+.note-card small{font-size:10px;color:var(--muted)}
+.flashcard{margin:22px 0;padding:24px;border:1px solid #315c40;background:linear-gradient(145deg,#10251a,#09130e);border-radius:14px}
+.flashcard h3{font-size:21px;line-height:1.5;margin:18px 0}
+.flashcard p{white-space:pre-wrap;color:#c3d6ca;line-height:1.7}
+.focus-card{text-align:center;padding:36px 20px}
+.focus-card h2{font-size:25px;margin:12px 0}
+.timer{font:600 clamp(56px,10vw,86px) 'DM Mono';letter-spacing:-5px;color:var(--green);margin:30px 0 20px}
+.timer-presets{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.timer-presets button{padding:8px 13px;border:1px solid var(--line);border-radius:8px;background:#0a1710;color:var(--muted);font-size:12px}
+.timer-presets button.selected{border-color:var(--green);color:var(--green)}
+.productivity-footer{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:10px;padding:20px 2px}
+@media(max-width:850px){.productivity-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.note-grid{grid-template-columns:1fr}.productivity-footer{flex-direction:column}.inline-form>*{width:100%}.productivity-card{padding:16px}.quick-actions{grid-template-columns:1fr 1fr}}
