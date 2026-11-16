@@ -12,6 +12,7 @@ import { BrevoClient } from "@getbrevo/brevo";
 import User from "./models/User.js";
 import Log from "./models/Log.js";
 import Otp from "./models/Otp.js";
+import PasswordReset from "./models/PasswordReset.js";
 
 const app = express();
 const production = process.env.NODE_ENV === "production";
@@ -132,6 +133,104 @@ app.post("/api/auth/login", authLimit, (req, res, next) => {
     establishLoginSession(req, res, user, 200, next);
   })(req, res, next);
 });
+
+app.post("/api/auth/forgot-password", otpLimit, async (req, res, next) => {
+  try {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return res.status(400).json({ message: "Enter a valid email address." });
+    const user = await User.findOne({ email });
+    // Return the same response whether or not the account exists.
+    if (user) {
+      const otp = crypto.randomInt(100000, 1000000).toString();
+      const codeDigest = crypto.createHmac("sha256", process.env.OTP_SECRET || process.env.SESSION_SECRET).update(email + ":password-reset:" + otp).digest("hex");
+      await PasswordReset.findOneAndUpdate(
+        { email },
+        { codeDigest, attempts: 0, expiresAt: new Date(Date.now() + 10 * 60 * 1000) },
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
+      try {
+        await brevo.transactionalEmails.sendTransacEmail({
+          sender: { email: process.env.BREVO_SENDER_EMAIL, name: "WorkX" },
+          to: [{ email }],
+          subject: "Reset your WorkX password",
+          htmlContent: `<div style="background:#07110d;color:#f4fff8;padding:32px;font-family:Arial"><h1 style="color:#00e58b">WorkX</h1><p>Use this code to reset your password:</p><div style="font-size:32px;letter-spacing:8px;font-weight:bold;color:#00e58b">${otp}</div><p>This code expires in 10 minutes. If you did not request a password reset, ignore this email.</p></div>`
+        });
+      } catch (e) { await PasswordReset.deleteOne({ email }); throw e; }
+    }
+    res.set("Cache-Control", "no-store").json({ success: true, message: "If an account exists for that email, a password reset code has been sent." });
+  } catch (e) { next(e); }
+});
+
+app.post("/api/auth/verify-password-reset", authLimit, async (req, res, next) => {
+  try {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const otp = String(req.body.otp || "").trim();
+    const record = await PasswordReset.findOneAndUpdate(
+      { email, expiresAt: { $gt: new Date() }, attempts: { $lt: 5 } },
+      { $inc: { attempts: 1 } },
+      { new: true }
+    );
+    if (!record) return res.status(400).json({ message: "The code is invalid, expired, or has too many attempts." });
+    const expected = crypto.createHmac("sha256", process.env.OTP_SECRET || process.env.SESSION_SECRET).update(email + ":password-reset:" + otp).digest("hex");
+    const valid = record.codeDigest.length === expected.length && crypto.timingSafeEqual(Buffer.from(record.codeDigest), Buffer.from(expected));
+    if (!valid) return res.status(400).json({ message: "The verification code is incorrect." });
+    req.session.passwordResetEmail = email;
+    req.session.passwordResetExpiresAt = Date.now() + 10 * 60 * 1000;
+    req.session.save(err => {
+      if (err) return next(err);
+      res.set("Cache-Control", "no-store").json({ success: true, message: "Email verified. You can now choose a new password." });
+    });
+  } catch (e) { next(e); }
+});
+
+app.post("/api/auth/reset-password", authLimit, async (req, res, next) => {
+  try {
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const password = String(req.body.password || "");
+    if (password.length < 8 || password.length > 128) return res.status(400).json({ message: "Password must be between 8 and 128 characters." });
+    if (req.session.passwordResetEmail !== email || !req.session.passwordResetExpiresAt || req.session.passwordResetExpiresAt < Date.now()) {
+      return res.status(403).json({ message: "Verify your email with a fresh code before resetting your password." });
+    }
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: "Unable to reset this password. Request a new code." });
+    await new Promise((resolve, reject) => user.setPassword(password, err => err ? reject(err) : resolve()));
+    await user.save();
+    await PasswordReset.deleteOne({ email });
+    delete req.session.passwordResetEmail;
+    delete req.session.passwordResetExpiresAt;
+    req.session.save(err => {
+      if (err) return next(err);
+      res.set("Cache-Control", "no-store").json({ success: true, message: "Password updated. You can now sign in with your new password." });
+    });
+  } catch (e) { next(e); }
+});
+
+app.delete("/api/auth/account", requireAuth, async (req, res, next) => {
+  try {
+    const password = String(req.body.password || "");
+    if (!password) return res.status(400).json({ message: "Enter your current password to delete your account." });
+    const verifyPassword = User.authenticate();
+    const validUser = await new Promise((resolve, reject) => {
+      verifyPassword(req.user.username, password, (err, user) => err ? reject(err) : resolve(user));
+    });
+    if (!validUser) return res.status(401).json({ message: "Your current password is incorrect." });
+    const userId = req.user._id;
+    const email = req.user.email;
+    await Log.deleteMany({ owner: userId });
+    await Otp.deleteOne({ email });
+    await PasswordReset.deleteOne({ email });
+    await User.deleteOne({ _id: userId });
+    req.logout(err => {
+      if (err) return next(err);
+      req.session.destroy(destroyErr => {
+        if (destroyErr) return next(destroyErr);
+        res.clearCookie("workx.sid", { httpOnly: true, secure: production, sameSite: "lax" });
+        res.json({ success: true, message: "Your account and learning logs have been permanently deleted." });
+      });
+    });
+  } catch (e) { next(e); }
+});
+
 app.post("/api/auth/logout", requireAuth, (req, res, next) => req.logout(err => {
   if (err) return next(err);
   req.session.destroy(destroyErr => { if (destroyErr) return next(destroyErr); res.clearCookie("workx.sid", { httpOnly: true, secure: production, sameSite: "lax" }); res.json({ success: true }); });
