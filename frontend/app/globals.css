@@ -11,3 +11,13 @@
 .password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:0;border-radius:8px;background:transparent;color:#91a99a;cursor:pointer;transition:color .18s ease,background .18s ease}
 .password-toggle:hover{color:var(--green);background:rgba(0,237,138,.08)}
 .password-toggle:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+
+.danger-panel{margin-top:28px;padding:22px;border:1px solid #633535;background:#1b1010;border-radius:14px}
+.danger-panel h2{margin:0 0 8px;font-size:17px;color:#ffbcbc}
+.danger-panel p{font-size:12px;line-height:1.7;color:#c99a9a}
+.danger-panel .field{max-width:420px}
+.danger-btn{background:#5a2020;border-color:#874040;color:#fff}
+.danger-btn:hover{background:#762727;border-color:#a64b4b}
+.auth-steps{display:flex;gap:8px;margin:22px 0}
+.auth-step{flex:1;padding:9px;border:1px solid var(--line);border-radius:8px;color:var(--muted);font:10px 'DM Mono';text-align:center}
+.auth-step.active{border-color:var(--green);color:var(--green);background:#0c2116}
