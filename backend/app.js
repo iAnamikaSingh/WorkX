@@ -138,7 +138,7 @@ app.post("/api/auth/login", authLimit, (req, res, next) => {
 app.post("/api/auth/forgot-password", otpLimit, async (req, res, next) => {
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return res.status(400).json({ message: "Enter a valid email address." });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ message: "Enter a valid email address." });
     const user = await User.findOne({ email });
     // Return the same response whether or not the account exists.
     if (user) {
