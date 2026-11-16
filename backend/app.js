@@ -13,6 +13,7 @@ import User from "./models/User.js";
 import Log from "./models/Log.js";
 import Otp from "./models/Otp.js";
 import PasswordReset from "./models/PasswordReset.js";
+import workspaceRouter from "./workspace.js";
 
 const app = express();
 const production = process.env.NODE_ENV === "production";
@@ -282,6 +283,8 @@ app.delete("/api/logs/:id/topics/:topicIndex/subtopics/:subIndex", requireAuth, 
     log.topics[i].subtopics.splice(j, 1); await log.save(); res.json({ log });
   } catch (e) { next(e); }
 });
+
+app.use("/api/workspace", workspaceRouter);
 
 app.use((req, res) => res.status(404).json({ message: "API endpoint not found." }));
 app.use((err, req, res, _next) => {
