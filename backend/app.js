@@ -22,7 +22,7 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({ origin(origin, cb) { if (!origin || allowedOrigins.includes(origin)) return cb(null, true); cb(new Error("Origin not allowed")); }, credentials: true }));
 app.use(express.json({ limit: "32kb" }));
 app.use((req, res, next) => {
-  if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method) && req.headers.origin && !allowedOrigins.includes(req.headers.origin)) return res.status(403).json({ message: "Request origin not allowed." });
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method) && (!req.headers.origin || !allowedOrigins.includes(req.headers.origin))) return res.status(403).json({ message: "Request origin not allowed." });
   next();
 });
 app.use(session({
@@ -31,7 +31,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URL, collectionName: "sessions", ttl: 60 * 60 * 24 * 7 }),
-  cookie: { httpOnly: true, secure: production, sameSite: production ? "none" : "lax", maxAge: 7 * 24 * 60 * 60 * 1000 }
+  cookie: { httpOnly: true, secure: production, sameSite: "lax", maxAge: 7 * 24 * 60 * 60 * 1000 }
 }));
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
@@ -51,7 +51,7 @@ const publicUser = user => ({ id: user._id, username: user.username, email: user
 const otpDigest = (email, otp) => crypto.createHmac("sha256", process.env.OTP_SECRET || process.env.SESSION_SECRET).update(email + ":" + otp).digest("hex");
 
 app.get("/api/health", (_req, res) => res.json({ status: "ok", service: "WorkX API" }));
-app.get("/api/auth/me", (req, res) => res.json({ user: req.user ? publicUser(req.user) : null }));
+app.get("/api/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); res.json({ user: req.user ? publicUser(req.user) : null }); });
 
 app.get("/api/auth/check-username", async (req, res, next) => {
   try {
@@ -83,8 +83,12 @@ app.post("/api/auth/verify-otp", authLimit, async (req, res, next) => {
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
     const otp = String(req.body.otp || "").trim();
-    const record = await Otp.findOne({ email });
-    if (!record || record.expiresAt < new Date()) return res.status(400).json({ message: "Code not found or expired. Request a new one." });
+    const record = await Otp.findOneAndUpdate(
+      { email, expiresAt: { $gt: new Date() }, $or: [{ attempts: { $lt: 5 } }, { attempts: { $exists: false } }] },
+      { $inc: { attempts: 1 } },
+      { new: true }
+    );
+    if (!record) return res.status(400).json({ message: "Code expired or too many incorrect attempts. Request a new one." });
     const expected = otpDigest(email, otp);
     const actual = record.otp;
     const valid = actual.length === expected.length && crypto.timingSafeEqual(Buffer.from(actual), Buffer.from(expected));
@@ -118,7 +122,7 @@ app.post("/api/auth/login", authLimit, (req, res, next) => {
 });
 app.post("/api/auth/logout", requireAuth, (req, res, next) => req.logout(err => {
   if (err) return next(err);
-  req.session.destroy(destroyErr => { if (destroyErr) return next(destroyErr); res.clearCookie("workx.sid", { httpOnly: true, secure: production, sameSite: production ? "none" : "lax" }); res.json({ success: true }); });
+  req.session.destroy(destroyErr => { if (destroyErr) return next(destroyErr); res.clearCookie("workx.sid", { httpOnly: true, secure: production, sameSite: "lax" }); res.json({ success: true }); });
 }));
 
 app.get("/api/logs", requireAuth, async (req, res, next) => {
