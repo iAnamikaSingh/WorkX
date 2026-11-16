@@ -74,7 +74,7 @@ The frontend proxies API traffic through Next.js rewrites. This keeps session co
 
 - Never commit real `.env` files or credentials.
 - Use long, unique random values for session and OTP HMAC secrets.
-- Production session cookies are HttpOnly, Secure and SameSite=None; Render proxy trust is enabled.
+- Production session cookies are HttpOnly, Secure and SameSite=Lax; Render proxy trust is enabled. Next.js rewrites API calls through the frontend origin.
 - CORS uses an explicit origin allowlist for direct API requests.
 - Authentication and OTP endpoints are rate-limited.
 - OTP values are HMAC-digested before storage and compared with timing-safe equality.
