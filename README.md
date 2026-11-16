@@ -1,71 +1,84 @@
 # WorkX
-![HomePage](public/screenshots/screenshot1.png)
-An Express.js and EJS-powered simple web applicatin to organize topics, track progress, and build a consistent learning habit.
 
-## 🎨Features 
-- User authentication with signup, login, and logout
-- Email verification using OTP before completing signup
-- OTP expiration after 10 minutes
-- MongoDB-backed session storage
-- Personal learning log dashboard for each authenticated user
-- Create new logs with multiple topics and subtopics
-- Edit existing logs and update topics
-- Delete logs, topics, or subtopics
-- Owner-based access control so users only manage their own logs
-- Client-side validation for signup/login forms
-- Flash-style success/error messaging across pages
-- Bootstrap + EJS UI with reusable navbar/footer layout
-- Topic normalization utility to clean submitted log data before save
+WorkX is a personal learning logbook. It helps learners capture study sessions, organize topics and subtopics, and track the time invested in learning.
 
-## Youtube video Link
-https://youtu.be/hynzG2NwUWw
+This repository now contains a separated Next.js frontend and Express API. The original EJS implementation and its existing data models are retained on the default branch; the migration is developed on `nextjs-modern-rebuild`.
 
-## 💻Technologies Used
-- Node.js — server-side runtime
-- Express — web framework
-- MongoDB via mongoose — database 
-- EJS + ejs-mate — view templates
-- Passport + passport-local + passport-local-mongoose — authentication
-- express-session + connect-mongo — session management with MongoDB storage
-- @getbrevo/brevo — email sending for OTP verification
-- dotenv — environment variable configuration
-- cookie-parser — cookie handling
-- method-override — support PUT/DELETE in forms
-- Javascript
-- CSS
-- HTML5
-- Bootstrap 
+## Project structure
 
-## 📦Installation 
-1. Clone the repository
-```bash
-git clone https://github.com/iAnamikaSingh/WorkX.git
+```
+backend/   Express 5 REST API, Passport local auth, MongoDB, Brevo OTP
+frontend/  Next.js App Router interface
 ```
 
-2. Navigate to the project directory
-```bash
-cd WorkX
-```
+## Features
 
-3. Install dependencies
+- Email OTP verification before account creation (10-minute expiry)
+- Username availability endpoint
+- Login, logout and persistent MongoDB-backed sessions
+- Personal learning logs
+- Multiple topics and subtopics per log
+- Per-topic hours and minutes
+- Create, edit and delete learning logs
+- Delete topics and subtopics through the API
+- Owner-scoped database queries for every log mutation
+
+## Local development
+
+### 1. Backend
+
 ```bash
+cd backend
+cp .env.example .env
 npm install
-```
-4. Install MongoDB Server
-   https://www.mongodb.com/try/download/community
-5. Configure `.env` with the database and session settings, plus your Brevo API key when email OTP is enabled:
-```env
-MONGO_URL=mongodb://127.0.0.1:27017/workx
-SESSION_SECRET=use-a-long-random-secret
-BREVO_API_KEY=your-brevo-api-key
-BREVO_SENDER_EMAIL=your-verified-sender-email
-```
-6. Start the application
-```bash
-nodemon index.js
-```
+npm run dev
+``
 
-7. Open your browser and visit
+Set valid MongoDB and Brevo credentials in `backend/.env`.
+
+### 2. Frontend
+
+In another terminal:
+
 ```bash
-http://localhost:8000/
-```
+cd frontend
+cp .env.example .env.local
+npm install
+npm run dev
+``
+
+Open http://localhost:3000. Next.js rewrites `/api/*` to the Express server, keeping browser requests same-origin and avoiding cross-site session-cookie restrictions.
+
+## Deploy
+
+### Render — backend
+
+- Create a **Web Service** from this repository.
+- Root directory: `backend`
+- Build command: `npm install`
+- Start command: `npm start`
+- Add `MONGO_URL`, `SESSION_SECRET`, `OTP_SECRET`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `CLIENT_URL`, and `NODE_ENV=production`.
+- Set `CLIENT_URL` to the Vercel frontend origin (or comma-separated origins if needed).
+
+### Vercel — frontend
+
+- Import the same repository.
+- Root directory: `frontend`
+- Framework preset: Next.js
+- Add `API_SERVER_URL=https://YOUR-RENDER-SERVICE.onrender.com`
+- Deploy.
+
+The frontend proxies API traffic through Next.js rewrites. This keeps session cookies first-party in the browser even though the Express API runs on Render. Do not expose the API origin as a client-side public environment variable.
+
+## Security notes
+
+- Never commit real `.env` files or credentials.
+- Use long, unique random values for session and OTP HMAC secrets.
+- Production session cookies are HttpOnly, Secure and SameSite=None; Render proxy trust is enabled.
+- CORS uses an explicit origin allowlist for direct API requests.
+- Authentication and OTP endpoints are rate-limited.
+- OTP values are HMAC-digested before storage and compared with timing-safe equality.
+- Log reads, updates and deletes always include the authenticated owner ID.
+- HTTPS is required in production.
+
+For production hardening, configure a custom domain strategy and monitor rate limits and email provider quotas. Add automated integration tests before opening registration to the public.
