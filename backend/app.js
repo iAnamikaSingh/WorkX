@@ -30,6 +30,8 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  rolling: true,
+  proxy: true,
   store: MongoStore.create({ mongoUrl: process.env.MONGO_URL, collectionName: "sessions", ttl: 60 * 60 * 24 * 7 }),
   cookie: { httpOnly: true, secure: production, sameSite: "lax", maxAge: 7 * 24 * 60 * 60 * 1000 }
 }));
@@ -48,6 +50,16 @@ const cleanTopics = (topics) => (Array.isArray(topics) ? topics : []).filter(t =
   time: { hour: Math.min(24, Math.max(0, Number(t.time?.hour) || 0)), minute: Math.min(59, Math.max(0, Number(t.time?.minute) || 0)) }
 }));
 const publicUser = user => ({ id: user._id, username: user.username, email: user.email });
+const establishLoginSession = (req, res, user, status = 200, next) => {
+  req.login(user, loginErr => {
+    if (loginErr) return next(loginErr);
+    // Persist the regenerated Passport session before returning success to the browser.
+    req.session.save(saveErr => {
+      if (saveErr) return next(saveErr);
+      res.status(status).set("Cache-Control", "no-store").json({ user: publicUser(user) });
+    });
+  });
+};
 const otpDigest = (email, otp) => crypto.createHmac("sha256", process.env.OTP_SECRET || process.env.SESSION_SECRET).update(email + ":" + otp).digest("hex");
 
 app.get("/api/health", (_req, res) => res.json({ status: "ok", service: "WorkX API" }));
@@ -109,7 +121,7 @@ app.post("/api/auth/signup", authLimit, async (req, res, next) => {
     if (req.session.verifiedEmail !== email) return res.status(403).json({ message: "Verify your email before creating an account." });
     const user = await User.register(new User({ username, email }), password);
     delete req.session.verifiedEmail;
-    req.login(user, err => { if (err) return next(err); res.status(201).json({ user: publicUser(user) }); });
+    establishLoginSession(req, res, user, 201, next);
   } catch (e) { if (e.code === 11000) return res.status(409).json({ message: "Username or email is already registered." }); next(e); }
 });
 
@@ -117,7 +129,7 @@ app.post("/api/auth/login", authLimit, (req, res, next) => {
   passport.authenticate("local", (err, user) => {
     if (err) return next(err);
     if (!user) return res.status(401).json({ message: "Invalid username or password." });
-    req.login(user, loginErr => loginErr ? next(loginErr) : res.json({ user: publicUser(user) }));
+    establishLoginSession(req, res, user, 200, next);
   })(req, res, next);
 });
 app.post("/api/auth/logout", requireAuth, (req, res, next) => req.logout(err => {
