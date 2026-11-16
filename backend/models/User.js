@@ -6,5 +6,5 @@ const schema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   isAdmin: { type: Boolean, default: false }
 }, { timestamps: true });
-schema.plugin(passportLocalMongoose);
+schema.plugin(passportLocalMongoose.default || passportLocalMongoose);
 export default mongoose.models.User || mongoose.model("User", schema);
