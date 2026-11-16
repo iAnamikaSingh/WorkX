@@ -53,11 +53,13 @@ Open http://localhost:3000. Next.js rewrites `/api/*` to the Express server, kee
 
 ### Render — backend
 
-- Create a **Web Service** from this repository.
-- Root directory: `backend`
+The existing Render service for this repository is configured with the repository root as its root directory. It starts the backend API through the root `index.js`, which imports `backend/server.js`.
+
+- Root directory: repository root (blank in Render settings)
 - Build command: `npm install`
 - Start command: `npm start`
-- Add `MONGO_URL`, `SESSION_SECRET`, `OTP_SECRET`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `CLIENT_URL`, and `NODE_ENV=production`.
+- Add `MONGO_URL`, `SESSION_SECRET`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `CLIENT_URL`, and `NODE_ENV=production`. The OTP digest uses `OTP_SECRET` if configured, otherwise `SESSION_SECRET`.
+- The original EJS files remain in the repository but are no longer started by the Render service.
 - Set `CLIENT_URL` to the Vercel frontend origin (or comma-separated origins if needed).
 
 ### Vercel — frontend
