@@ -174,11 +174,15 @@ app.post("/api/auth/verify-password-reset", authLimit, async (req, res, next) =>
     const expected = crypto.createHmac("sha256", process.env.OTP_SECRET || process.env.SESSION_SECRET).update(email + ":password-reset:" + otp).digest("hex");
     const valid = record.codeDigest.length === expected.length && crypto.timingSafeEqual(Buffer.from(record.codeDigest), Buffer.from(expected));
     if (!valid) return res.status(400).json({ message: "The verification code is incorrect." });
-    req.session.passwordResetEmail = email;
-    req.session.passwordResetExpiresAt = Date.now() + 10 * 60 * 1000;
-    req.session.save(err => {
+    await PasswordReset.deleteOne({ _id: record._id });
+    req.session.regenerate(err => {
       if (err) return next(err);
-      res.set("Cache-Control", "no-store").json({ success: true, message: "Email verified. You can now choose a new password." });
+      req.session.passwordResetEmail = email;
+      req.session.passwordResetExpiresAt = Date.now() + 10 * 60 * 1000;
+      req.session.save(saveErr => {
+        if (saveErr) return next(saveErr);
+        res.set("Cache-Control", "no-store").json({ success: true, message: "Email verified. You can now choose a new password." });
+      });
     });
   } catch (e) { next(e); }
 });
