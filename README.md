@@ -2,7 +2,7 @@
 
 WorkX is a personal learning logbook. It helps learners capture study sessions, organize topics and subtopics, and track the time invested in learning.
 
-This repository now contains a separated Next.js frontend and Express API. The original EJS implementation and its existing data models are retained on the default branch; the migration is developed on `nextjs-modern-rebuild`.
+This repository now contains a separated Next.js frontend and Express API on the default branch. The original EJS implementation is retained in the repository as a reference; the new deployment uses `frontend/` and `backend/`.
 
 ## Project structure
 
