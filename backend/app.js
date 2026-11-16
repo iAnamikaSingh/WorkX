@@ -119,7 +119,7 @@ app.post("/api/auth/login", authLimit, (req, res, next) => {
 app.post("/api/auth/logout", requireAuth, (req, res, next) => req.logout(err => {
   if (err) return next(err);
   req.session.destroy(destroyErr => { if (destroyErr) return next(destroyErr); res.clearCookie("workx.sid", { httpOnly: true, secure: production, sameSite: production ? "none" : "lax" }); res.json({ success: true }); });
-});
+}));
 
 app.get("/api/logs", requireAuth, async (req, res, next) => {
   try { const logs = await Log.find({ owner: req.user._id }).sort({ date: -1 }).lean(); res.json({ logs }); } catch (e) { next(e); }
