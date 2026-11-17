@@ -354,6 +354,6 @@ app.use((req, res) => res.status(404).json({ message: "API endpoint not found." 
 app.use((err, req, res, _next) => {
   console.error(err);
   if (res.headersSent) return;
-  res.status(err.status || 500).json({ message: err.status && err.status < 500 ? err.message : "Something went wrong. Please try again." });
+  res.status(err.status || 500).set("Cache-Control", "no-store").json({ message: err.status && err.status < 500 ? err.message : "Something went wrong. Please try again.", code: err.code || (err.status === 401 ? "UNAUTHENTICATED" : err.status === 403 ? "FORBIDDEN" : "INTERNAL_ERROR") });
 });
 export default app;
