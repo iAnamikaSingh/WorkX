@@ -109,6 +109,16 @@ app.patch("/api/admin/users/:id/role", requireAdmin, async (req, res, next) => {
 });
 app.get("/api/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); res.json({ user: req.user ? publicUser(req.user) : null }); });
 
+// Public, minimal account-existence check used to validate workspace URLs before rendering them.
+app.get("/api/users/:username/exists", async (req, res, next) => {
+  try {
+    const username = String(req.params.username || "").trim().toLowerCase();
+    if (!/^[a-z0-9_]{3,20}$/.test(username)) return res.set("Cache-Control", "no-store").json({ exists: false });
+    const exists = await User.exists({ username });
+    res.set("Cache-Control", "no-store").json({ exists: Boolean(exists) });
+  } catch (e) { next(e); }
+});
+
 app.get("/api/auth/check-username", async (req, res, next) => {
   try {
     const username = String(req.query.username || "").trim().toLowerCase();
