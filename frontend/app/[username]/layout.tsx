@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import type { User } from "@/lib/types";
+import { WorkspaceAuthContext } from "@/lib/auth-context";
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
   const { username } = useParams<{ username: string }>();
@@ -11,6 +12,12 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   const router = useRouter();
   const [verifiedFor, setVerifiedFor] = useState<string | null>(null);
   const [checking, setChecking] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const refreshUser = async () => {
+    const result = await api<{ user: User | null }>("/auth/me");
+    setUser(result.user);
+    return result.user;
+  };
 
   useEffect(() => {
     let active = true;
@@ -46,5 +53,5 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   if (checking || verifiedFor !== username) {
     return <main className="shell" aria-live="polite"><p className="loading">Verifying your workspace…</p></main>;
   }
-  return <>{children}</>;
+  return <WorkspaceAuthContext.Provider value={{ user, loading: checking, refreshUser }}>{children}</WorkspaceAuthContext.Provider>;
 }
