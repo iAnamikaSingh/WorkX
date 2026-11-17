@@ -6,7 +6,14 @@ const USERNAME = /^[a-z0-9_]{3,20}$/;
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const first = pathname.split("/").filter(Boolean)[0] || "";
-  if (!first || PUBLIC_PATHS.has(first) || !USERNAME.test(first)) return NextResponse.next();
+  if (!first) return NextResponse.next();
+  if (["login", "signup", "forgot-password"].includes(first)) {
+    const response = NextResponse.next();
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+    return response;
+  }
+  if (PUBLIC_PATHS.has(first)) return NextResponse.next();
+  if (!USERNAME.test(first)) return NextResponse.next();
 
   const cookie = request.headers.get("cookie") || "";
   if (!cookie) return NextResponse.redirect(new URL("/login", request.url));
@@ -30,7 +37,9 @@ export async function middleware(request: NextRequest) {
     const requestHeaders = new Headers(request.headers);
     requestHeaders.set("x-workx-user-id", String(payload.user.id));
     requestHeaders.set("x-workx-user-role", String(payload.user.role || "user"));
-    return NextResponse.next({ request: { headers: requestHeaders } });
+    const response = NextResponse.next({ request: { headers: requestHeaders } });
+    response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+    return response;
   } catch {
     return NextResponse.redirect(new URL("/login", request.url));
   }
