@@ -152,3 +152,29 @@
 .admin-spin{animation:admin-spin 1s linear infinite}
 @keyframes admin-spin{to{transform:rotate(360deg)}}
 @media(max-width:700px){.admin-heading{flex-direction:column}.admin-stat-grid{grid-template-columns:1fr}.admin-section-heading{flex-direction:column}.admin-toolbar{align-items:flex-start;flex-direction:column}.admin-search{width:100%}.admin-pagination{align-items:flex-start;flex-direction:column}.admin-users-section{padding:15px}.admin-heading h1{font-size:31px}}
+
+
+/* Authenticated homepage */
+.personal-top-user{display:flex;align-items:center;gap:9px;color:#c5d7ca;font-size:12px;font-weight:700}
+.personal-avatar{width:31px;height:31px;border-radius:9px;display:grid;place-items:center;background:#123521;border:1px solid #286344;color:var(--green);font-weight:800}
+.personal-admin-tag{font:9px 'DM Mono';letter-spacing:.8px;padding:4px 6px;border-radius:5px;background:#0d2819;border:1px solid #286344;color:var(--green)}
+.personal-hero{padding:88px 0 75px;max-width:780px}
+.personal-hero h1{font-size:clamp(52px,7vw,82px)}
+.personal-links{padding:38px 0 85px;border-top:1px solid #17281f}
+.personal-link-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin-top:22px}
+.personal-link-card{display:flex;align-items:center;gap:15px;min-width:0;padding:20px;border:1px solid #1b3527;border-radius:13px;background:linear-gradient(145deg,#0d1b13,#09120d);transition:border-color .2s,transform .2s}
+.personal-link-card:hover{border-color:#39734f;transform:translateY(-2px)}
+.personal-link-card>svg:first-child{width:21px;height:21px;flex:none;color:var(--green)}
+.personal-link-card>svg:last-child{width:15px;height:15px;flex:none;margin-left:auto;color:#71877a}
+.personal-link-card strong{font-size:13px}
+.personal-link-card p{font-size:11px;line-height:1.6;color:var(--muted);margin:5px 0 0}
+.personal-admin-card{border-color:#286344;background:linear-gradient(145deg,#10271a,#09130e)}
+/* Contextual not-found and access pages */
+.route-message{min-height:100vh;padding-top:34px;padding-bottom:60px;display:flex;flex-direction:column}
+.route-message-card{width:min(680px,100%);margin:auto;padding:clamp(25px,5vw,48px);border:1px solid #1e3b2b;border-radius:20px;background:radial-gradient(ellipse at 0 0,#103321 0,transparent 52%),#09130e;box-shadow:0 24px 90px #0005}
+.route-message-icon{width:54px;height:54px;display:grid;place-items:center;border:1px solid #286344;background:#0c2819;color:var(--green);border-radius:15px;margin-bottom:27px}
+.route-message-card h1{font-size:clamp(38px,6vw,58px);letter-spacing:-3px;margin:18px 0 15px}
+.route-message-card>p{max-width:520px;color:#9aaca1;font-size:14px;line-height:1.85}
+.route-message-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.route-message-code{display:block;margin-top:45px;padding-top:17px;border-top:1px solid #1b3024;color:#688071;font-size:9px;letter-spacing:1.2px}
+@media(max-width:560px){.personal-hero{padding:60px 0}.personal-link-grid{grid-template-columns:1fr}.personal-top-user{display:none}.route-message-card h1{letter-spacing:-2px}}
