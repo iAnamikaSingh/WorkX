@@ -8,19 +8,19 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
   const { username } = useParams<{ username: string }>();
   const pathname = usePathname();
   const router = useRouter();
-  const { user, status, refreshUser } = useAuth();
+  const { user, status } = useAuth();
 
   useEffect(() => {
     if (status === "loading") return;
     if (status === "unauthenticated") {
-      void refreshUser().catch(() => router.replace("/login"));
+      router.replace("/login");
       return;
     }
     if (user && user.username !== username) {
       const suffix = pathname.slice(("/" + username).length);
       router.replace("/" + encodeURIComponent(user.username) + suffix);
     }
-  }, [status, user, username, pathname, router, refreshUser]);
+  }, [status, user, username, pathname, router]);
 
   if (status !== "authenticated" || !user || user.username !== username) {
     return <LoadingState label="Verifying your secure workspace…" />;
