@@ -14,8 +14,8 @@ function titleForPath(pathname: string) {
   const parts = pathname.split("/").filter(Boolean);
   const route = parts.length > 1 ? "/" + parts.slice(1).join("/") : parts.length === 1 ? "/" + parts[0] : "/";
   if (TITLES[route]) return TITLES[route];
-  if (/^\\/logs\\/[^/]+\\/edit$/.test(route)) return "Edit Learning Log";
-  if (/^\\/logs\\/[^/]+$/.test(route)) return "Learning Log";
+  if (route.startsWith("/logs/") && route.endsWith("/edit")) return "Edit Learning Log";
+  if (route.startsWith("/logs/") && route.split("/").length === 3) return "Learning Log";
   return parts.length > 1 ? "WorkX Workspace" : "Page Not Found";
 }
 
