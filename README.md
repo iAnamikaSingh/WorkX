@@ -1,86 +1,88 @@
 # WorkX
 
-WorkX is a personal learning logbook. It helps learners capture study sessions, organize topics and subtopics, and track the time invested in learning.
+WorkX is a personal learning and productivity workspace. It helps learners record study sessions, organize topics and subtopics, track time, and manage learning goals, tasks, notes, bookmarks, and flashcards.
 
-This repository now contains a separated Next.js frontend and Express API on the default branch. The original EJS implementation is retained in the repository as a reference; the new deployment uses `frontend/` and `backend/`.
+## Repository structure
 
-## Project structure
-
+```text
+WorkX/
+├── frontend/          Next.js application (deployed on Vercel)
+├── backend/           Express API and MongoDB models (deployed on Render)
+├── docs/              Architecture and maintenance documentation
+├── index.js           Render startup entry point
+├── package.json       Root runtime dependencies and Render scripts
+├── package-lock.json  Locked root dependencies used by Render
+├── .gitignore
+└── README.md
 ```
-backend/   Express 5 REST API, Passport local auth, MongoDB, Brevo OTP
-frontend/  Next.js App Router interface
-```
+
+The previous EJS application and its root-level models, routes, utilities, static assets, views, and sample seed script have been removed. The active frontend and backend are maintained separately in `frontend/` and `backend/`.
 
 ## Features
 
-- Email OTP verification before account creation (10-minute expiry)
-- Username availability endpoint
-- Login, logout and persistent MongoDB-backed sessions
-- Personal learning logs
-- Multiple topics and subtopics per log
-- Per-topic hours and minutes
-- Create, edit and delete learning logs
-- Delete topics and subtopics through the API
-- Owner-scoped database queries for every log mutation
+- Email OTP verification before account creation
+- Login, logout, and persistent MongoDB-backed sessions
+- Username availability checks and username changes
+- User-scoped learning logs with topics, subtopics, and time tracking
+- Productivity workspace with goals, tasks, notes, bookmarks, and flashcards
+- Password recovery and account deletion
+- Role-protected administrative API endpoints
+- Owner-scoped database access
 
 ## Local development
 
-### 1. Backend
+### Backend
 
 ```bash
 cd backend
 cp .env.example .env
 npm install
 npm run dev
-``
+```
 
-Set valid MongoDB and Brevo credentials in `backend/.env`.
+Configure MongoDB and Brevo credentials in `backend/.env`.
 
-### 2. Frontend
+### Frontend
 
-In another terminal:
+In a separate terminal:
 
 ```bash
 cd frontend
 cp .env.example .env.local
 npm install
 npm run dev
-``
+```
 
-Open http://localhost:3000. Next.js rewrites `/api/*` to the Express server, keeping browser requests same-origin and avoiding cross-site session-cookie restrictions.
+Open `http://localhost:3000`. The Next.js application proxies `/api/*` requests to the Express API so browser session cookies remain same-origin.
 
-## Deploy
+## Deployment
 
 ### Render — backend
 
-The existing Render service for this repository is configured with the repository root as its root directory. It starts the backend API through the root `index.js`, which imports `backend/server.js`.
+The existing Render service uses the repository root as its root directory and starts the API through the root `index.js`, which imports `backend/server.js`.
 
-- Root directory: repository root (blank in Render settings)
+- Root directory: repository root (leave blank)
 - Build command: `npm install`
 - Start command: `npm start`
-- Add `MONGO_URL`, `SESSION_SECRET`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `CLIENT_URL`, and `NODE_ENV=production`. The OTP digest uses `OTP_SECRET` if configured, otherwise `SESSION_SECRET`.
-- The original EJS files remain in the repository but are no longer started by the Render service.
-- Set `CLIENT_URL` to the Vercel frontend origin (or comma-separated origins if needed).
+- Required environment variables: `MONGO_URL`, `SESSION_SECRET`, `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `CLIENT_URL`, and `NODE_ENV=production`
+- Optional: `OTP_SECRET` (falls back to `SESSION_SECRET`)
+
+Do not delete or move the root `index.js`, `package.json`, or `package-lock.json` without updating the Render service configuration.
 
 ### Vercel — frontend
 
-- Import the same repository.
 - Root directory: `frontend`
-- Framework preset: Next.js
-- Add `API_SERVER_URL=https://YOUR-RENDER-SERVICE.onrender.com`
-- Deploy.
+- Framework: Next.js
+- Environment variable: `API_SERVER_URL` set to the Render API origin
 
-The frontend proxies API traffic through Next.js rewrites. This keeps session cookies first-party in the browser even though the Express API runs on Render. Do not expose the API origin as a client-side public environment variable.
+Do not expose the backend origin as a client-side public environment variable.
 
-## Security notes
+## Security
 
-- Never commit real `.env` files or credentials.
-- Use long, unique random values for session and OTP HMAC secrets.
-- Production session cookies are HttpOnly, Secure and SameSite=Lax; Render proxy trust is enabled. Next.js rewrites API calls through the frontend origin.
-- CORS uses an explicit origin allowlist for direct API requests.
+- Never commit real `.env` files, API keys, database credentials, or session secrets.
+- Production session cookies are HttpOnly, Secure, and SameSite=Lax.
+- CORS uses the configured frontend origin allowlist.
 - Authentication and OTP endpoints are rate-limited.
-- OTP values are HMAC-digested before storage and compared with timing-safe equality.
-- Log reads, updates and deletes always include the authenticated owner ID.
-- HTTPS is required in production.
-
-For production hardening, configure a custom domain strategy and monitor rate limits and email provider quotas. Add automated integration tests before opening registration to the public.
+- OTP values are HMAC-digested before storage.
+- Learning-log reads and mutations are scoped to the authenticated owner.
+- Admin actions are enforced by backend role checks.
