@@ -12,7 +12,7 @@ const TITLES: Record<string, string> = {
 
 function titleForPath(pathname: string) {
   const parts = pathname.split("/").filter(Boolean);
-  const route = parts.length > 1 ? "/" + parts.slice(1).join("/") : "/";
+  const route = parts.length > 1 ? "/" + parts.slice(1).join("/") : parts.length === 1 ? "/" + parts[0] : "/";
   if (TITLES[route]) return TITLES[route];
   if (/^\\/logs\\/[^/]+\\/edit$/.test(route)) return "Edit Learning Log";
   if (/^\\/logs\\/[^/]+$/.test(route)) return "Learning Log";
