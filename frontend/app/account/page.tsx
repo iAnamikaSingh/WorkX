@@ -49,7 +49,7 @@ export default function AccountSettings(){
  }
  async function removeAccount(){setError("");setBusy(true);try{await authService.deleteAccount(password);router.replace("/");router.refresh()}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
  return <div className="app-layout"><WorkspaceSidebar active="account"/><main className="main-area"><div className="shell" style={{paddingTop:38,paddingBottom:80,maxWidth:900}}>
-  <Link href={`/${user?.username}/dashboard` className="subtle" style={{display:"inline-flex",gap:8,alignItems:"center"}}><ArrowLeft size={14}/> Back to dashboard</Link>
+  <Link href={`/${user?.username}/dashboard`} className="subtle" style={{display:"inline-flex",gap:8,alignItems:"center"}}><ArrowLeft size={14}/> Back to dashboard</Link>
   <div style={{marginTop:34}}><div className="eyebrow">WORKX / ACCOUNT</div><h1 style={{fontSize:42,letterSpacing:-2,margin:"12px 0"}}>Account <span className="accent">settings.</span></h1><p className="subtle">Manage your account and its security.</p></div>
   {error&&<div className="notice error">{error}</div>}
   <section className="stat-card" style={{marginTop:26}}>
