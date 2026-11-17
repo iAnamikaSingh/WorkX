@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Activity, ArrowLeft, ChevronLeft, ChevronRight, Search, ShieldCheck, Shield, Users, BookOpen, RefreshCw, UserRoundCheck, UserRoundX } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Activity, ChevronLeft, ChevronRight, Search, ShieldCheck, Shield, Users, BookOpen, RefreshCw, UserRoundCheck, UserRoundX } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { adminService, type AdminUser } from "@/lib/services/admin";
 import { ErrorMessage, LoadingState } from "@/components/RouteError";
@@ -17,7 +17,6 @@ function dateLabel(value: string) {
 }
 
 export default function AdminDashboardPage() {
-  const { username } = useParams<{ username: string }>();
   const router = useRouter();
   const { user, status } = useAuth();
   const [overview, setOverview] = useState<Overview | null>(null);
@@ -37,7 +36,7 @@ export default function AdminDashboardPage() {
     if (user.role !== "admin") router.replace(`/${encodeURIComponent(user.username)}/dashboard`);
   }, [status, user, router]);
 
-  const load = useCallback(async (requestedPage = page) => {
+  const load = useCallback(async (requestedPage = 1) => {
     setLoading(true);
     setError("");
     try {
@@ -55,7 +54,7 @@ export default function AdminDashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [page]);
+  }, []);
 
   useEffect(() => {
     if (status === "authenticated" && user?.role === "admin") void load(1);
