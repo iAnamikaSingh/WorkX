@@ -7,27 +7,59 @@ import { BookOpen, LogOut, Menu, Settings, Target, X } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
 type Props = { active: "dashboard" | "productivity" | "account" };
+
 export default function WorkspaceSidebar({ active }: Props) {
   const { user, signOut } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const base = user?.username ? `/${encodeURIComponent(user.username)}` : "";
   const links = [
-    { href: `${base}/dashboard`, label: "My learning logs", key: "dashboard", Icon: BookOpen },
+    { href: `${base}/dashboard`, label: "Learning logs", key: "dashboard", Icon: BookOpen },
     { href: `${base}/productivity`, label: "Productivity hub", key: "productivity", Icon: Target },
     { href: `${base}/account`, label: "Account settings", key: "account", Icon: Settings }
   ] as const;
+
   async function logout() {
     try { await signOut(); } finally { router.replace("/login"); }
   }
+
   return <>
-    <aside className="sidebar">
-      <Link href="/" className="brand"><span className="brand-mark">W</span>workx.</Link>
+    <aside className="sidebar" aria-label="Workspace navigation">
+      <Link href={`${base}/dashboard`} className="brand" aria-label="WorkX dashboard">
+        <span className="brand-mark">W</span><span>WorkX</span>
+      </Link>
       <div className="side-label">WORKSPACE</div>
-      {links.map(({ href, label, key, Icon }) => <Link key={key} href={href} className={`side-link ${active === key ? "active" : ""}`}><Icon size={16}/>{label}</Link>)}
-      <div className="side-bottom"><div className="side-label">ACCOUNT</div><div style={{ padding: 10, fontSize: 12, color: "#9aac9f" }}>{user?.username}</div><button onClick={logout} className="side-link" style={{ width: "100%", background: "transparent", border: 0, textAlign: "left" }}><LogOut size={16}/> Sign out</button></div>
+      <nav aria-label="Main navigation">
+        {links.map(({ href, label, key, Icon }) =>
+          <Link key={key} href={href} aria-current={active === key ? "page" : undefined}
+            className={`side-link ${active === key ? "active" : ""}`}>
+            <Icon size={17} strokeWidth={1.8}/><span>{label}</span>
+          </Link>
+        )}
+      </nav>
+      <div className="side-bottom">
+        <div className="side-label">SIGNED IN AS</div>
+        <div title={user?.username || "Your account"}>{user?.username || "Your account"}</div>
+        <button onClick={logout} className="side-link" style={{ width: "100%", background: "transparent", border: 0, textAlign: "left" }}>
+          <LogOut size={16} strokeWidth={1.8}/><span>Sign out</span>
+        </button>
+      </div>
     </aside>
-    <div className="mobile-header"><Link href="/" className="brand"><span className="brand-mark">W</span>workx.</Link><button className="btn btn-ghost mobile-menu" onClick={() => setOpen(v => !v)} aria-label="Toggle navigation">{open ? <X size={18}/> : <Menu size={18}/>}</button></div>
-    {open && <nav className="mobile-nav">{links.map(({ href, label, key, Icon }) => <Link key={key} href={href} onClick={() => setOpen(false)} className={`side-link ${active === key ? "active" : ""}`}><Icon size={16}/>{label}</Link>)}<button onClick={logout} className="side-link" style={{ width: "100%", background: "transparent", border: 0, textAlign: "left" }}><LogOut size={16}/> Sign out</button></nav>}
+    <div className="mobile-header">
+      <Link href={`${base}/dashboard`} className="brand"><span className="brand-mark">W</span>WorkX</Link>
+      <button className="btn btn-ghost mobile-menu" onClick={() => setOpen(v => !v)} aria-label="Toggle navigation" aria-expanded={open}>
+        {open ? <X size={18}/> : <Menu size={18}/>}
+      </button>
+    </div>
+    {open && <nav className="mobile-nav" aria-label="Mobile navigation">
+      {links.map(({ href, label, key, Icon }) =>
+        <Link key={key} href={href} onClick={() => setOpen(false)} className={`side-link ${active === key ? "active" : ""}`}>
+          <Icon size={16}/>{label}
+        </Link>
+      )}
+      <button onClick={logout} className="side-link" style={{ width: "100%", background: "transparent", border: 0, textAlign: "left" }}>
+        <LogOut size={16}/> Sign out
+      </button>
+    </nav>}
   </>;
 }
