@@ -212,9 +212,10 @@ app.post("/api/auth/forgot-password", otpLimit, async (req, res, next) => {
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ message: "Enter a valid email address." });
-    const user = await User.findOne({ email });
-    // Return the same response whether or not the account exists.
-    if (user) {
+    const user = await User.findOne({ email }).select("_id email");
+    if (!user) return res.status(404).set("Cache-Control", "no-store").json({ message: "No WorkX account exists with this email address." });
+
+    {
       const otp = crypto.randomInt(100000, 1000000).toString();
       const codeDigest = crypto.createHmac("sha256", process.env.OTP_SECRET || process.env.SESSION_SECRET).update(email + ":password-reset:" + otp).digest("hex");
       await PasswordReset.findOneAndUpdate(
@@ -239,6 +240,8 @@ app.post("/api/auth/verify-password-reset", authLimit, async (req, res, next) =>
   try {
     const email = String(req.body.email || "").trim().toLowerCase();
     const otp = String(req.body.otp || "").trim();
+    const accountExists = await User.exists({ email });
+    if (!accountExists) return res.status(404).set("Cache-Control", "no-store").json({ message: "No WorkX account exists with this email address. Please start again with a registered email." });
     const record = await PasswordReset.findOneAndUpdate(
       { email, expiresAt: { $gt: new Date() }, attempts: { $lt: 5 } },
       { $inc: { attempts: 1 } },
@@ -270,7 +273,7 @@ app.post("/api/auth/reset-password", authLimit, async (req, res, next) => {
       return res.status(403).json({ message: "Verify your email with a fresh code before resetting your password." });
     }
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Unable to reset this password. Request a new code." });
+    if (!user) return res.status(404).json({ message: "No WorkX account exists with this email address. Please start again with a registered email." });
     // passport-local-mongoose v9 exposes setPassword as a Promise.
     // Avoid the legacy callback form, which can fail with Mongoose 9.
     await user.setPassword(password);
