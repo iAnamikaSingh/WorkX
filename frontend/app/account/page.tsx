@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Eye, EyeOff, LoaderCircle, ShieldAlert, Trash2, CheckCircle2 } from "lucide-react";
 import { api } from "@/lib/api";
 import type { User } from "@/lib/types";
+import { authService } from "@/lib/services/auth";
+import WorkspaceSidebar from "@/components/WorkspaceSidebar";
 
 export default function AccountSettings(){
  const [user,setUser]=useState<User|null>(null);
@@ -20,7 +22,7 @@ export default function AccountSettings(){
  const [confirm,setConfirm]=useState(false);
  const router=useRouter();
 
- useEffect(()=>{api<{user:User|null}>("/auth/me").then(r=>{if(!r.user)router.replace("/login");else{setUser(r.user);setUsername(r.user.username)}}).catch(e=>setError((e as Error).message))},[router]);
+ useEffect(()=>{authService.me().then(r=>{if(!r.user)router.replace("/login");else{setUser(r.user);setUsername(r.user.username)}}).catch(e=>setError((e as Error).message))},[router]);
 
  useEffect(()=>{
   if(!user)return;
@@ -29,7 +31,7 @@ export default function AccountSettings(){
   if(normalized===user.username){setUsernameAvailable(true);setUsernameStatus("This is your current username.");return;}
   setCheckingUsername(true);setUsernameAvailable(false);
   const timer=setTimeout(async()=>{
-   try{const result=await api<{available:boolean;message?:string}>("/auth/check-username?username="+encodeURIComponent(normalized));setUsernameAvailable(result.available);setUsernameStatus(result.message||(result.available?"Username is available.":"That username is already taken. Please choose another."));}
+   try{const result=await authService.checkUsername(normalized);setUsernameAvailable(result.available);setUsernameStatus(result.message||(result.available?"Username is available.":"That username is already taken. Please choose another."));}
    catch(e){setUsernameStatus((e as Error).message);}
    finally{setCheckingUsername(false);}
   },350);
@@ -39,12 +41,12 @@ export default function AccountSettings(){
  async function saveUsername(e:React.FormEvent){
   e.preventDefault();if(!usernameAvailable||checkingUsername||!user)return;
   setError("");setSavingUsername(true);
-  try{const result=await api<{user:User;message:string}>("/auth/username",{method:"PATCH",body:JSON.stringify({username:username.trim().toLowerCase()})});setUser(result.user);setUsername(result.user.username);setUsernameStatus(result.message);router.replace(`/${result.user.username}/account`);}
+  try{const result=await authService.updateUsername(username.trim().toLowerCase());setUser(result.user);setUsername(result.user.username);setUsernameStatus(result.message);router.replace(`/${result.user.username}/account`);}
   catch(e){setError((e as Error).message);}
   finally{setSavingUsername(false);}
  }
- async function removeAccount(){setError("");setBusy(true);try{await api("/auth/account",{method:"DELETE",body:JSON.stringify({password})});router.replace("/");router.refresh()}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
- return <main className="shell" style={{paddingTop:38,paddingBottom:80,maxWidth:900}}>
+ async function removeAccount(){setError("");setBusy(true);try{await authService.deleteAccount(password);router.replace("/");router.refresh()}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
+ return <div className="app-layout"><WorkspaceSidebar active="account"/><main className="main-area"><div className="shell" style={{paddingTop:38,paddingBottom:80,maxWidth:900}}>
   <Link href={`/${user?.username}/dashboard` className="subtle" style={{display:"inline-flex",gap:8,alignItems:"center"}}><ArrowLeft size={14}/> Back to dashboard</Link>
   <div style={{marginTop:34}}><div className="eyebrow">WORKX / ACCOUNT</div><h1 style={{fontSize:42,letterSpacing:-2,margin:"12px 0"}}>Account <span className="accent">settings.</span></h1><p className="subtle">Manage your account and its security.</p></div>
   {error&&<div className="notice error">{error}</div>}
