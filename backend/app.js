@@ -13,6 +13,7 @@ import User from "./models/User.js";
 import Log from "./models/Log.js";
 import Otp from "./models/Otp.js";
 import PasswordReset from "./models/PasswordReset.js";
+import WorkspaceData from "./models/WorkspaceData.js";
 import workspaceRouter from "./workspace.js";
 
 const app = express();
@@ -285,7 +286,7 @@ app.delete("/api/auth/account", requireAuth, async (req, res, next) => {
     if (!validUser) return res.status(401).json({ message: "Your current password is incorrect." });
     const userId = req.user._id;
     const email = req.user.email;
-    await Log.deleteMany({ owner: userId });
+    await Promise.all([Log.deleteMany({ owner: userId }), WorkspaceData.deleteOne({ owner: userId })]);
     await Otp.deleteOne({ email });
     await PasswordReset.deleteOne({ email });
     await User.deleteOne({ _id: userId });
