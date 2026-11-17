@@ -198,7 +198,9 @@ app.post("/api/auth/reset-password", authLimit, async (req, res, next) => {
     }
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Unable to reset this password. Request a new code." });
-    await new Promise((resolve, reject) => user.setPassword(password, err => err ? reject(err) : resolve()));
+    // passport-local-mongoose v9 exposes setPassword as a Promise.
+    // Avoid the legacy callback form, which can fail with Mongoose 9.
+    await user.setPassword(password);
     await user.save();
     await PasswordReset.deleteOne({ email });
     delete req.session.passwordResetEmail;
