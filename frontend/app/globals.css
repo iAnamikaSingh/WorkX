@@ -103,3 +103,52 @@
 .sidebar .side-bottom>div:nth-child(2){padding:8px 10px!important;color:var(--text)!important;font-weight:700;overflow:hidden;text-overflow:ellipsis}
 .main-area{min-width:0;min-height:100vh;padding:36px clamp(24px,4vw,58px)}
 @media(max-width:850px){.app-layout{grid-template-columns:1fr}.sidebar{display:none}.main-area{min-height:100vh}}
+
+/* WorkX administrator console */
+.admin-main{max-width:1320px}
+.admin-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:22px}
+.admin-heading .eyebrow,.admin-section-heading .eyebrow{display:flex;align-items:center;gap:7px}
+.admin-heading h1{font-size:36px;letter-spacing:-2px;margin:12px 0 7px}
+.admin-heading p,.admin-section-heading p{color:var(--muted);font-size:12px;margin:0;line-height:1.7}
+.admin-stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:28px 0 34px}
+.admin-stat-card{padding:20px 21px;border:1px solid #1b3527;border-radius:14px;background:linear-gradient(145deg,#0d1b13,#09120d)}
+.admin-stat-card>span{display:flex;align-items:center;gap:8px;color:#9ab0a1;font:10px 'DM Mono';letter-spacing:1px}
+.admin-stat-card>span svg{color:var(--green)}
+.admin-stat-card strong{display:block;font-size:32px;letter-spacing:-1.5px;margin:13px 0 4px}
+.admin-stat-card small{color:#71877a;font-size:11px}
+.admin-users-section{border:1px solid #1b3024;border-radius:15px;background:#09130e;padding:22px}
+.admin-section-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.admin-section-heading h2{font-size:19px;margin:9px 0 5px;letter-spacing:-.5px}
+.admin-total,.admin-page-label{font:10px 'DM Mono';color:#91a699;letter-spacing:.8px}
+.admin-total{padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.admin-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:22px 0 14px}
+.admin-search{display:flex;align-items:center;gap:10px;width:min(440px,100%);padding:0 12px;border:1px solid #294233;background:#07100b;border-radius:9px;color:#789083}
+.admin-search:focus-within{border-color:var(--green);box-shadow:0 0 0 3px #00ed8a12}
+.admin-search input{width:100%;padding:12px 0;background:transparent;border:0;outline:0;color:var(--text);font-size:12px}
+.admin-table-wrap{width:100%;overflow-x:auto;border:1px solid #1b3024;border-radius:11px}
+.admin-table{width:100%;border-collapse:collapse;text-align:left;min-width:650px}
+.admin-table th{padding:13px 15px;background:#0d1b13;color:#71877a;font:10px 'DM Mono';letter-spacing:1px}
+.admin-table td{padding:15px;border-top:1px solid #192b20;font-size:12px}
+.admin-user-name{display:flex;align-items:center;gap:8px;font-weight:800;color:#e8f7ed}
+.admin-user-email{font-size:11px;color:#81958a;margin-top:5px}
+.admin-you{font:9px 'DM Mono';padding:3px 5px;border-radius:4px;color:var(--green);background:#0b2819}
+.admin-role{display:inline-flex;align-items:center;gap:6px;padding:6px 9px;border:1px solid #294033;border-radius:7px;color:#aabbb0;font-size:10px}
+.admin-role.is-admin{border-color:#286344;background:#0d2819;color:var(--green)}
+.admin-date{color:#9aaca1;white-space:nowrap}
+.admin-action-heading{text-align:right}
+.admin-action-cell{text-align:right}
+.admin-role-button{padding:8px 11px;font-size:11px;white-space:nowrap}
+.admin-promote{border-color:#286344;background:#0d2819;color:var(--green)}
+.admin-demote{color:#d7b4a8}
+.admin-role-button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.admin-pagination{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:17px;color:var(--muted);font-size:11px}
+.admin-pagination>div{display:flex;gap:8px}
+.admin-pagination .btn{padding:8px 11px;font-size:11px}
+.admin-table-loading{padding:42px 15px;text-align:center;color:var(--muted);font-size:12px}
+.admin-empty{margin-top:4px;padding:36px}
+.admin-success{border-color:#286344;background:#0d2819;color:#b8f5d0}
+.admin-footnote{display:flex;align-items:center;gap:9px;margin:18px 2px;color:#71877a;font-size:11px;line-height:1.6}
+.admin-footnote svg{flex:none;color:var(--green)}
+.admin-spin{animation:admin-spin 1s linear infinite}
+@keyframes admin-spin{to{transform:rotate(360deg)}}
+@media(max-width:700px){.admin-heading{flex-direction:column}.admin-stat-grid{grid-template-columns:1fr}.admin-section-heading{flex-direction:column}.admin-toolbar{align-items:flex-start;flex-direction:column}.admin-search{width:100%}.admin-pagination{align-items:flex-start;flex-direction:column}.admin-users-section{padding:15px}.admin-heading h1{font-size:31px}}
