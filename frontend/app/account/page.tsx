@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import type { User } from "@/lib/types";
 import { authService } from "@/lib/services/auth";
 import WorkspaceSidebar from "@/components/WorkspaceSidebar";
+import { useAuth } from "@/lib/auth-context";
 
 export default function AccountSettings(){
  const [user,setUser]=useState<User|null>(null);
@@ -21,6 +22,7 @@ export default function AccountSettings(){
  const [error,setError]=useState("");
  const [confirm,setConfirm]=useState(false);
  const router=useRouter();
+ const {refreshUser}=useAuth();
 
  useEffect(()=>{authService.me().then(r=>{if(!r.user)router.replace("/login");else{setUser(r.user);setUsername(r.user.username)}}).catch(e=>setError((e as Error).message))},[router]);
 
@@ -41,7 +43,7 @@ export default function AccountSettings(){
  async function saveUsername(e:React.FormEvent){
   e.preventDefault();if(!usernameAvailable||checkingUsername||!user)return;
   setError("");setSavingUsername(true);
-  try{const result=await authService.updateUsername(username.trim().toLowerCase());setUser(result.user);setUsername(result.user.username);setUsernameStatus(result.message);router.replace(`/${result.user.username}/account`);}
+  try{const result=await authService.updateUsername(username.trim().toLowerCase());setUser(result.user);setUsername(result.user.username);setUsernameStatus(result.message);await refreshUser();router.replace(`/${result.user.username}/account`);}
   catch(e){setError((e as Error).message);}
   finally{setSavingUsername(false);}
  }
