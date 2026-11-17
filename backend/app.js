@@ -71,8 +71,29 @@ app.get("/api/auth/check-username", async (req, res, next) => {
   try {
     const username = String(req.query.username || "").trim().toLowerCase();
     if (!/^[a-z0-9_]{3,20}$/.test(username)) return res.json({ available: false, message: "Use 3–20 letters, numbers or underscores." });
-    res.json({ available: !(await User.exists({ username })) });
+    const existing = await User.findOne({ username }).select("_id").lean();
+    const available = !existing || (req.user && String(existing._id) === String(req.user._id));
+    res.set("Cache-Control", "no-store").json({ available, message: available ? "Username is available." : "That username is already taken. Please choose another." });
   } catch (e) { next(e); }
+});
+
+app.patch("/api/auth/username", requireAuth, async (req, res, next) => {
+  try {
+    const username = String(req.body.username || "").trim().toLowerCase();
+    if (!/^[a-z0-9_]{3,20}$/.test(username)) return res.status(400).json({ message: "Username must be 3–20 letters, numbers or underscores." });
+    const existing = await User.findOne({ username }).select("_id").lean();
+    if (existing && String(existing._id) !== String(req.user._id)) {
+      return res.status(409).json({ message: "That username is already taken. Please choose another." });
+    }
+    if (req.user.username !== username) {
+      req.user.username = username;
+      await req.user.save();
+    }
+    res.set("Cache-Control", "no-store").json({ user: publicUser(req.user), message: "Username updated successfully." });
+  } catch (e) {
+    if (e.code === 11000) return res.status(409).json({ message: "That username is already taken. Please choose another." });
+    next(e);
+  }
 });
 
 app.post("/api/auth/send-otp", otpLimit, async (req, res, next) => {
