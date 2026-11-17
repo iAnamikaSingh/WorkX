@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { BookOpen, LogOut, Menu, Settings, Target, X } from "lucide-react";
+import { BookOpen, LogOut, Menu, Settings, ShieldCheck, Target, X } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 
-type Props = { active: "dashboard" | "productivity" | "account" };
+type Props = { active: "dashboard" | "productivity" | "account" | "admin" };
 
 export default function WorkspaceSidebar({ active }: Props) {
   const { user, signOut } = useAuth();
@@ -18,6 +18,7 @@ export default function WorkspaceSidebar({ active }: Props) {
     { href: `${base}/productivity`, label: "Productivity hub", key: "productivity", Icon: Target },
     { href: `${base}/account`, label: "Account settings", key: "account", Icon: Settings }
   ] as const;
+  const adminLink = user?.role === "admin" ? { href: `${base}/admin`, label: "Admin dashboard", key: "admin" as const, Icon: ShieldCheck } : null;
 
   async function logout() {
     try { await signOut(); } finally { router.replace("/login"); }
@@ -36,6 +37,7 @@ export default function WorkspaceSidebar({ active }: Props) {
             <Icon size={17} strokeWidth={1.8}/><span>{label}</span>
           </Link>
         )}
+        {adminLink && <Link href={adminLink.href} aria-current={active === "admin" ? "page" : undefined} className={`side-link ${active === "admin" ? "active" : ""}`}><adminLink.Icon size={17} strokeWidth={1.8}/><span>{adminLink.label}</span></Link>}
       </nav>
       <div className="side-bottom">
         <div className="side-label">SIGNED IN AS</div>
@@ -57,6 +59,7 @@ export default function WorkspaceSidebar({ active }: Props) {
           <Icon size={16}/>{label}
         </Link>
       )}
+      {adminLink && <Link href={adminLink.href} onClick={() => setOpen(false)} className={`side-link ${active === "admin" ? "active" : ""}`}><adminLink.Icon size={16}/>{adminLink.label}</Link>}
       <button onClick={logout} className="side-link" style={{ width: "100%", background: "transparent", border: 0, textAlign: "left" }}>
         <LogOut size={16}/> Sign out
       </button>
