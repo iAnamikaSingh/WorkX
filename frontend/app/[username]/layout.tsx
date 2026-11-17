@@ -1,57 +1,29 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { api } from "@/lib/api";
-import type { User } from "@/lib/types";
-import { WorkspaceAuthContext } from "@/lib/auth-context";
+import { useAuth } from "@/lib/auth-context";
+import { LoadingState } from "@/components/RouteError";
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
   const { username } = useParams<{ username: string }>();
   const pathname = usePathname();
   const router = useRouter();
-  const [verifiedFor, setVerifiedFor] = useState<string | null>(null);
-  const [checking, setChecking] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
-  const refreshUser = async () => {
-    const result = await api<{ user: User | null }>("/auth/me");
-    setUser(result.user);
-    return result.user;
-  };
+  const { user, status, refreshUser } = useAuth();
 
   useEffect(() => {
-    let active = true;
-    setChecking(true);
-    setVerifiedFor(null);
-    api<{ user: User | null }>("/auth/me")
-      .then(({ user }) => {
-        if (!active) return;
-        if (!user) {
-          router.replace("/login");
-          return;
-        }
-        if (user.username !== username) {
-          const suffix = pathname.slice(("/" + username).length);
-          router.replace("/" + encodeURIComponent(user.username) + suffix);
-          return;
-        }
-        setVerifiedFor(username);
-        setChecking(false);
-      })
-      .catch(() => {
-        if (active) router.replace("/login");
-      });
-    return () => { active = false; };
-  }, [username, pathname, router]);
+    if (status === "loading") return;
+    if (status === "unauthenticated") {
+      void refreshUser().catch(() => router.replace("/login"));
+      return;
+    }
+    if (user && user.username !== username) {
+      const suffix = pathname.slice(("/" + username).length);
+      router.replace("/" + encodeURIComponent(user.username) + suffix);
+    }
+  }, [status, user, username, pathname, router, refreshUser]);
 
-  useEffect(() => {
-    const handleUnauthorized = () => router.replace("/login");
-    window.addEventListener("workx:unauthorized", handleUnauthorized);
-    return () => window.removeEventListener("workx:unauthorized", handleUnauthorized);
-  }, [router]);
-
-  if (checking || verifiedFor !== username) {
-    return <main className="shell" aria-live="polite"><p className="loading">Verifying your workspace…</p></main>;
+  if (status !== "authenticated" || !user || user.username !== username) {
+    return <LoadingState label="Verifying your secure workspace…" />;
   }
-  return <WorkspaceAuthContext.Provider value={{ user, loading: checking, refreshUser }}>{children}</WorkspaceAuthContext.Provider>;
+  return <>{children}</>;
 }
