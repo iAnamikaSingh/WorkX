@@ -39,13 +39,13 @@ export default function AccountSettings(){
  async function saveUsername(e:React.FormEvent){
   e.preventDefault();if(!usernameAvailable||checkingUsername||!user)return;
   setError("");setSavingUsername(true);
-  try{const result=await api<{user:User;message:string}>("/auth/username",{method:"PATCH",body:JSON.stringify({username:username.trim().toLowerCase()})});setUser(result.user);setUsername(result.user.username);setUsernameStatus(result.message);}
+  try{const result=await api<{user:User;message:string}>("/auth/username",{method:"PATCH",body:JSON.stringify({username:username.trim().toLowerCase()})});setUser(result.user);setUsername(result.user.username);setUsernameStatus(result.message);router.replace(`/${result.user.username}/account`);}
   catch(e){setError((e as Error).message);}
   finally{setSavingUsername(false);}
  }
  async function removeAccount(){setError("");setBusy(true);try{await api("/auth/account",{method:"DELETE",body:JSON.stringify({password})});router.replace("/");router.refresh()}catch(e){setError((e as Error).message)}finally{setBusy(false)}}
  return <main className="shell" style={{paddingTop:38,paddingBottom:80,maxWidth:900}}>
-  <Link href="/dashboard" className="subtle" style={{display:"inline-flex",gap:8,alignItems:"center"}}><ArrowLeft size={14}/> Back to dashboard</Link>
+  <Link href={`/${user?.username}/dashboard` className="subtle" style={{display:"inline-flex",gap:8,alignItems:"center"}}><ArrowLeft size={14}/> Back to dashboard</Link>
   <div style={{marginTop:34}}><div className="eyebrow">WORKX / ACCOUNT</div><h1 style={{fontSize:42,letterSpacing:-2,margin:"12px 0"}}>Account <span className="accent">settings.</span></h1><p className="subtle">Manage your account and its security.</p></div>
   {error&&<div className="notice error">{error}</div>}
   <section className="stat-card" style={{marginTop:26}}>
