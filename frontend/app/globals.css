@@ -89,3 +89,17 @@
 @keyframes workx-bounce{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-3px);opacity:1}}
 @keyframes workx-progress{0%{transform:translateX(-110%)}100%{transform:translateX(310%)}}
 @media(prefers-reduced-motion:reduce){.async-button.is-busy .async-loader svg,.async-dots i,.async-progress i{animation:none}}
+
+/* WorkX workspace sidebar: fixed-height navigation independent of page content */
+.app-layout{grid-template-columns:252px minmax(0,1fr);align-items:start}
+.sidebar{position:sticky;top:0;align-self:start;height:100vh;min-height:100vh;max-height:100vh;overflow:hidden;padding:30px 18px 22px;gap:0}
+.sidebar .brand{padding:3px 8px 25px;border-bottom:1px solid #172c20}
+.sidebar .brand-mark{width:36px;height:36px;border-radius:10px;box-shadow:0 5px 18px #00ed8a20}
+.sidebar .side-label{margin:25px 10px 10px}
+.sidebar .side-link{min-height:42px;padding:10px 12px;margin:2px 0;transition:background .18s ease,color .18s ease,border-color .18s ease}
+.sidebar .side-link.active{box-shadow:inset 2px 0 0 var(--green);background:linear-gradient(90deg,#102b1c,#0d1d14);color:var(--green)}
+.sidebar .side-bottom{margin-top:auto;padding-top:14px;border-top:1px solid #172c20}
+.sidebar .side-bottom .side-label{margin:0 10px 9px}
+.sidebar .side-bottom>div:nth-child(2){padding:8px 10px!important;color:var(--text)!important;font-weight:700;overflow:hidden;text-overflow:ellipsis}
+.main-area{min-width:0;min-height:100vh;padding:36px clamp(24px,4vw,58px)}
+@media(max-width:850px){.app-layout{grid-template-columns:1fr}.sidebar{display:none}.main-area{min-height:100vh}}
