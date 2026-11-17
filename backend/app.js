@@ -45,13 +45,18 @@ app.use(passport.session());
 
 const authLimit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 12, standardHeaders: "draft-8", legacyHeaders: false, message: { message: "Too many attempts. Please try again later." } });
 const otpLimit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5, standardHeaders: "draft-8", legacyHeaders: false, message: { message: "Too many OTP requests. Try again later." } });
-const requireAuth = (req, res, next) => req.isAuthenticated() ? next() : res.status(401).json({ message: "Please sign in to continue." });
+const requireAuth = (req, res, next) => req.isAuthenticated() ? next() : res.status(401).json({ message: "Please sign in to continue.", code: "UNAUTHENTICATED" });
+const requireAdmin = (req, res, next) => {
+  if (!req.isAuthenticated()) return res.status(401).json({ message: "Please sign in to continue.", code: "UNAUTHENTICATED" });
+  if (req.user?.isAdmin !== true) return res.status(403).json({ message: "You do not have permission to access this resource.", code: "FORBIDDEN" });
+  next();
+};
 const cleanTopics = (topics) => (Array.isArray(topics) ? topics : []).filter(t => typeof t?.topicName === "string" && t.topicName.trim()).map(t => ({
   topicName: t.topicName.trim().slice(0, 120),
   subtopics: (Array.isArray(t.subtopics) ? t.subtopics : []).filter(s => typeof s === "string" && s.trim()).map(s => s.trim().slice(0, 160)),
   time: { hour: Math.min(24, Math.max(0, Number(t.time?.hour) || 0)), minute: Math.min(59, Math.max(0, Number(t.time?.minute) || 0)) }
 }));
-const publicUser = user => ({ id: user._id, username: user.username, email: user.email });
+const publicUser = user => ({ id: user._id, username: user.username, email: user.email, role: user.isAdmin === true ? "admin" : "user" });
 const establishLoginSession = (req, res, user, status = 200, next) => {
   req.login(user, loginErr => {
     if (loginErr) return next(loginErr);
@@ -65,6 +70,13 @@ const establishLoginSession = (req, res, user, status = 200, next) => {
 const otpDigest = (email, otp) => crypto.createHmac("sha256", process.env.OTP_SECRET || process.env.SESSION_SECRET).update(email + ":" + otp).digest("hex");
 
 app.get("/api/health", (_req, res) => res.json({ status: "ok", service: "WorkX API" }));
+// Admin-only endpoint establishes a server-enforced RBAC boundary for future admin tools.
+app.get("/api/admin/overview", requireAdmin, async (_req, res, next) => {
+  try {
+    const [users, logs] = await Promise.all([User.countDocuments(), Log.countDocuments()]);
+    res.set("Cache-Control", "no-store").json({ overview: { users, logs } });
+  } catch (e) { next(e); }
+});
 app.get("/api/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); res.json({ user: req.user ? publicUser(req.user) : null }); });
 
 app.get("/api/auth/check-username", async (req, res, next) => {
