@@ -21,13 +21,13 @@ export async function middleware(request: NextRequest) {
   const apiOrigin = process.env.API_SERVER_URL;
   if (!apiOrigin) return process.env.NODE_ENV === "production" ? NextResponse.json({ message: "Workspace authentication is not configured." }, { status: 503 }) : NextResponse.next();
   try {
-    const response = await fetch(new URL("/api/auth/me", apiOrigin), {
+    const authResponse = await fetch(new URL("/api/auth/me", apiOrigin), {
       headers: { cookie, accept: "application/json" },
       cache: "no-store"
     });
-    if (response.status === 401 || response.status === 403) return NextResponse.redirect(new URL("/login", request.url));
-    if (!response.ok) return NextResponse.json({ message: "Workspace authentication is temporarily unavailable." }, { status: 503 });
-    const payload = await response.json();
+    if (authResponse.status === 401 || authResponse.status === 403) return NextResponse.redirect(new URL("/login", request.url));
+    if (!authResponse.ok) return NextResponse.json({ message: "Workspace authentication is temporarily unavailable." }, { status: 503 });
+    const payload = await authResponse.json();
     if (!payload?.user?.username) return NextResponse.redirect(new URL("/login", request.url));
     if (payload.user.username !== first) {
       const url = request.nextUrl.clone();
