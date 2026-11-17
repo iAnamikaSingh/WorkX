@@ -46,11 +46,13 @@ app.use(passport.session());
 const authLimit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 12, standardHeaders: "draft-8", legacyHeaders: false, message: { message: "Too many attempts. Please try again later." } });
 const otpLimit = rateLimit({ windowMs: 15 * 60 * 1000, limit: 5, standardHeaders: "draft-8", legacyHeaders: false, message: { message: "Too many OTP requests. Try again later." } });
 const requireAuth = (req, res, next) => req.isAuthenticated() ? next() : res.status(401).json({ message: "Please sign in to continue.", code: "UNAUTHENTICATED" });
-const requireAdmin = (req, res, next) => {
+const requireRole = (...roles) => (req, res, next) => {
   if (!req.isAuthenticated()) return res.status(401).json({ message: "Please sign in to continue.", code: "UNAUTHENTICATED" });
-  if (req.user?.isAdmin !== true) return res.status(403).json({ message: "You do not have permission to access this resource.", code: "FORBIDDEN" });
+  const role = req.user?.isAdmin === true ? "admin" : "user";
+  if (!roles.includes(role)) return res.status(403).json({ message: "You do not have permission to access this resource.", code: "FORBIDDEN" });
   next();
 };
+const requireAdmin = requireRole("admin");
 const cleanTopics = (topics) => (Array.isArray(topics) ? topics : []).filter(t => typeof t?.topicName === "string" && t.topicName.trim()).map(t => ({
   topicName: t.topicName.trim().slice(0, 120),
   subtopics: (Array.isArray(t.subtopics) ? t.subtopics : []).filter(s => typeof s === "string" && s.trim()).map(s => s.trim().slice(0, 160)),
@@ -70,11 +72,38 @@ const establishLoginSession = (req, res, user, status = 200, next) => {
 const otpDigest = (email, otp) => crypto.createHmac("sha256", process.env.OTP_SECRET || process.env.SESSION_SECRET).update(email + ":" + otp).digest("hex");
 
 app.get("/api/health", (_req, res) => res.json({ status: "ok", service: "WorkX API" }));
-// Admin-only endpoint establishes a server-enforced RBAC boundary for future admin tools.
+// All administrative operations are protected by a database-backed role check.
 app.get("/api/admin/overview", requireAdmin, async (_req, res, next) => {
   try {
-    const [users, logs] = await Promise.all([User.countDocuments(), Log.countDocuments()]);
-    res.set("Cache-Control", "no-store").json({ overview: { users, logs } });
+    const [users, logs, admins] = await Promise.all([User.countDocuments(), Log.countDocuments(), User.countDocuments({ isAdmin: true })]);
+    res.set("Cache-Control", "no-store").json({ overview: { users, logs, admins } });
+  } catch (e) { next(e); }
+});
+app.get("/api/admin/users", requireAdmin, async (req, res, next) => {
+  try {
+    const limit = Math.min(100, Math.max(1, Number.parseInt(req.query.limit, 10) || 25));
+    const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+    const [users, total] = await Promise.all([
+      User.find().select("username email isAdmin createdAt").sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
+      User.countDocuments()
+    ]);
+    res.set("Cache-Control", "no-store").json({ users: users.map(u => ({ id: u._id, username: u.username, email: u.email, role: u.isAdmin ? "admin" : "user", createdAt: u.createdAt })), pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
+  } catch (e) { next(e); }
+});
+app.patch("/api/admin/users/:id/role", requireAdmin, async (req, res, next) => {
+  try {
+    const role = req.body?.role;
+    if (!["admin", "user"].includes(role)) return res.status(400).json({ message: "Role must be admin or user." });
+    const target = await User.findById(req.params.id);
+    if (!target) return res.status(404).json({ message: "User not found." });
+    const makeAdmin = role === "admin";
+    if (target.isAdmin && !makeAdmin) {
+      const admins = await User.countDocuments({ isAdmin: true });
+      if (admins <= 1) return res.status(409).json({ message: "The last administrator cannot be demoted." });
+    }
+    target.isAdmin = makeAdmin;
+    await target.save();
+    res.set("Cache-Control", "no-store").json({ user: publicUser(target), message: "User role updated." });
   } catch (e) { next(e); }
 });
 app.get("/api/auth/me", (req, res) => { res.set("Cache-Control", "no-store"); res.json({ user: req.user ? publicUser(req.user) : null }); });
