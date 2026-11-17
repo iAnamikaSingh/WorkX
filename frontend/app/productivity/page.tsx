@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { ArrowLeft, Check, Clock3, Flame, Target, ListTodo, StickyNote, Bookmark, Layers, Play, Pause, RotateCcw, Plus, Trash2, ExternalLink, BarChart3 } from "lucide-react";
 
-type Item = { id:string; title:string; [key:string]:any };
+type Item = { id:string; title?:string; [key:string]:any };
 type Data = { goals:Item[]; tasks:Item[]; notes:Item[]; bookmarks:Item[]; flashcards:Item[] };
 const empty:Data={goals:[],tasks:[],notes:[],bookmarks:[],flashcards:[]};
 const uid=()=>typeof crypto!=="undefined"&&"randomUUID"in crypto?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2);
