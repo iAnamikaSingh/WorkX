@@ -35,8 +35,8 @@ app.use(session({
   saveUninitialized: false,
   rolling: true,
   proxy: true,
-  store: MongoStore.create({ mongoUrl: process.env.MONGO_URL, collectionName: "sessions", ttl: 60 * 60 * 24 * 7 }),
-  cookie: { httpOnly: true, secure: production, sameSite: "lax", maxAge: 7 * 24 * 60 * 60 * 1000 }
+  store: MongoStore.create({ mongoUrl: process.env.MONGO_URL, collectionName: "sessions", ttl: 60 * 60 * 24 * 90 }),
+  cookie: { httpOnly: true, secure: production, sameSite: "lax", maxAge: 90 * 24 * 60 * 60 * 1000 }
 }));
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
